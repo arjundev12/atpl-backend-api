@@ -23,7 +23,7 @@ class Chapters {
     async create(req, res) {
         try {
             let { name, content, id, category_meta,subcategory_meta } = req.body
-           console.log("hiiii", name, content, id)
+        //    console.log("category_meta in chapters", name, content, category_meta)
             let getData = await ChapterModel.findOne({ name: name ,subcategory:subcategory_meta._id})
             if (getData) {
                 res.json({ code: 422, success: false, message: 'this name is all ready exist', })
@@ -63,7 +63,9 @@ class Chapters {
             }
             let query = {}
             if (req.body.searchData ){
-                query = { $or: [{ name: { $regex: req.body.searchData, $options: "i" } }, { "subcategory_meta.name": { $regex: req.body.searchData, $options: "i" } }] }
+                query = { $or: [{ name: { $regex: req.body.searchData, $options: "i" } },
+                 { "subcategory_meta.name": { $regex: req.body.searchData, $options: "i" } },
+                 { "category_meta.name": { $regex: req.body.searchData, $options: "i" } }] }
             }
             let data = await ChapterModel.paginate(query, options)
             // console.log("news", data)

@@ -6,6 +6,8 @@ router.post('/get-subcategory',subCategories.get)
 router.post('/add-subcategory',subCategories.create)
 router.delete('/delete-category',subCategories.delete)
 router.get('/subcategory-list',subCategories.getList)
+// router.get('/subcategory-list',subCategories.getListById)
+
 
 
 

@@ -19,7 +19,8 @@ class Question {
     async create(req, res) {
         try {
             let { question, content, id, category_meta,subcategory_meta, chapter_meta } = req.body
-        //    console.log("hiiii", question, subcategory_meta, chapter_meta )
+        //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
+
            let obj = {}
                 if (question){
                     obj.question = question
@@ -27,14 +28,14 @@ class Question {
                 if (content){
                     obj.content = content
                 }
-                // if (category_meta){
-                //     obj.category = category_meta._id
-                //     obj.category_meta = category_meta
-                // }
-                // if (subcategory_meta){
-                //     obj.subcategory = subcategory_meta._id
-                //     obj.subcategory_meta = subcategory_meta
-                // }
+                if (category_meta){
+                    obj.category = category_meta._id
+                    obj.category_meta = category_meta
+                }
+                if (subcategory_meta){
+                    obj.subcategory = subcategory_meta._id
+                    obj.subcategory_meta = subcategory_meta
+                }
                 if (chapter_meta){
                     obj.chapter = chapter_meta._id
                     obj.chapter_meta = chapter_meta

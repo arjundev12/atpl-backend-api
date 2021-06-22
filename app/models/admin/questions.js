@@ -28,6 +28,21 @@ var questionSchema = new Schema({
       enum : ['active', 'inactive', 'delete'],
       default :"active"
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "categories",
+  },
+  subcategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "subcategories",
+      require: true
+  },
+  category_meta: {
+      type: { any: [Schema.Types.Mixed] }
+  },
+  subcategory_meta: {
+      type: { any: [Schema.Types.Mixed] }
+  },
     chapter: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "chapters",

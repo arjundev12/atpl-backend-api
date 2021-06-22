@@ -14,7 +14,7 @@ class SubCategories {
             get: this.get.bind(this),
             delete: this.delete.bind(this),
             getList: this.getList.bind(this),
-            // updateNews: this.updateNews.bind(this),
+            // getListById: this.getListById.bind(this),
             // updateBlogs: this.updateBlogs.bind(this)
           
 
@@ -85,14 +85,30 @@ class SubCategories {
     }
     async getList(req, res){
         try {
-            let data = await SubCategoryModel.find()
-            // console.log("news", data)
-            res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            if(req.query._id){
+                let data = await SubCategoryModel.find({category: req.query._id})
+                res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            }else{
+                let data = await SubCategoryModel.find()
+                // console.log("news", data)
+                res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+
+            }
+           
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })
         }
     }
+    // async getListById(req, res){
+    //     try {
+    //         // console.log("news", data)
+    //         res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+    //     } catch (error) {
+    //         console.log("Error in catch", error)
+    //         res.status(500).json({ success: false, message: "Somthing went wrong", })
+    //     }
+    // }
     //////////////////////////////////////////////////////end//////////////////////////////////////////////
 
 
