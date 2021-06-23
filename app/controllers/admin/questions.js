@@ -18,36 +18,44 @@ class Question {
 
     async create(req, res) {
         try {
-            let { question, content, id, category_meta,subcategory_meta, chapter_meta } = req.body
-        //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
+            let { question, content, id, category_meta, subcategory_meta, chapter_meta, options, difficulty_level } = req.body
+            //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
 
-           let obj = {}
-                if (question){
-                    obj.question = question
-                }
-                if (content){
-                    obj.content = content
-                }
-                if (category_meta){
-                    obj.category = category_meta._id
-                    obj.category_meta = category_meta
-                }
-                if (subcategory_meta){
-                    obj.subcategory = subcategory_meta._id
-                    obj.subcategory_meta = subcategory_meta
-                }
-                if (chapter_meta){
-                    obj.chapter = chapter_meta._id
-                    obj.chapter_meta = chapter_meta
-                }
-                let saveData = new QuestionModel(obj)
-                await saveData.save();
-                res.json({ code: 200, success: true, message: 'news save successfully', })
+            let obj = {}
+            if (question) {
+                obj.question = question
+               
+            }
+            if (content) {
+                obj.content = content
+            }
+            if (difficulty_level) {
+                obj.difficulty_level = difficulty_level
+            }
+            if (category_meta) {
+                obj.category = category_meta._id
+                obj.category_meta = category_meta
+            }
+            if (subcategory_meta) {
+                obj.subcategory = subcategory_meta._id
+                obj.subcategory_meta = subcategory_meta
+            }
+            if (chapter_meta) {
+                obj.chapter = chapter_meta._id
+                obj.chapter_meta = chapter_meta
+            }
+            if (options) {
+                obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }, { D: options.D }]
+                obj.correct_index = options.answer == 'A' ? 0 : options.answer == 'B' ? 1 : options.answer == 'C' ? 2 : 3
+            }
+            let saveData = new QuestionModel(obj)
+            await saveData.save();
+            res.json({ code: 200, success: true, message: 'news save successfully', })
             // let getData = await QuestionModel.findOne({ question: question })
             // if (getData) {
             //     res.json({ code: 422, success: false, message: 'this question is all ready exist', })
             // } else {
-                
+
             // }
 
         } catch (error) {
@@ -64,7 +72,7 @@ class Question {
                 lean: true,
             }
             let query = {}
-            if (req.body.searchData ){
+            if (req.body.searchData) {
                 query = { $or: [{ question: { $regex: req.body.searchData, $options: "i" } }, { content: { $regex: req.body.searchData, $options: "i" } }] }
             }
             let data = await QuestionModel.paginate(query, options)
@@ -81,26 +89,26 @@ class Question {
 
     async updateNews(req, res) {
         try {
-            let { title, content, id, image, status} = req.body
-           console.log("hiiii", title, content, id, status)
+            let { title, content, id, image, status } = req.body
+            console.log("hiiii", title, content, id, status)
             let getData = await NewsModel.findOne({ _id: id }).lean()
 
             if (getData) {
-                if(title){
-                    getData.title= title
+                if (title) {
+                    getData.title = title
                 }
-                if(content){
-                    getData.content= content
+                if (content) {
+                    getData.content = content
                 }
-                if(image){
-                    getData.image= image
+                if (image) {
+                    getData.image = image
                 }
-                if(status){
+                if (status) {
                     getData.status = status
                 }
                 console.log("upadate datata", getData, typeof status)
-                let update = await NewsModel.findOneAndUpdate({_id: id},getData, {new:true})
-                res.json({ code: 200, success: true, message: 'news update successfully',data: update })
+                let update = await NewsModel.findOneAndUpdate({ _id: id }, getData, { new: true })
+                res.json({ code: 200, success: true, message: 'news update successfully', data: update })
             } else {
                 res.json({ code: 400, success: false, message: 'this news is not exist', })
             }
@@ -112,26 +120,26 @@ class Question {
     }
     async updateBlogs(req, res) {
         try {
-            let { title, content, id, image, status} = req.body
-           console.log("hiiii", title, content, id)
+            let { title, content, id, image, status } = req.body
+            console.log("hiiii", title, content, id)
             let getData = await BlogModel.findOne({ _id: id })
 
             if (getData) {
                 let obj = {}
-                if(title){
-                    obj.title= title
+                if (title) {
+                    obj.title = title
                 }
-                if(content){
-                    obj.content= content
+                if (content) {
+                    obj.content = content
                 }
-                if(image){
-                    obj.image= image
+                if (image) {
+                    obj.image = image
                 }
-                if(status){
-                    obj.status= status
+                if (status) {
+                    obj.status = status
                 }
-                let update = await BlogModel.findOneAndUpdate({_id: id},{$set:obj}, {new:true})
-                res.json({ code: 200, success: true, message: 'news update successfully',data: update })
+                let update = await BlogModel.findOneAndUpdate({ _id: id }, { $set: obj }, { new: true })
+                res.json({ code: 200, success: true, message: 'news update successfully', data: update })
             } else {
                 res.json({ code: 400, success: false, message: 'this news is not exist', })
             }
@@ -141,15 +149,15 @@ class Question {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
-   
+
     async createBlogs(req, res) {
         try {
-            let { title, content, id, image} = req.body
+            let { title, content, id, image } = req.body
             let obj = {
                 title: title,
                 content: content,
                 created_by: '607e5136b24182674c4a8ed6',
-                image : image
+                image: image
             }
             let getData = await BlogModel.findOne({ title: title })
             if (getData) {
@@ -191,8 +199,8 @@ class Question {
             res.json({ code: 400, success: false, message: "Internal server error", })
         }
     }
- 
-   
+
+
 }
 
 

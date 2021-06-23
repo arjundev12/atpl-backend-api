@@ -11,7 +11,7 @@ var questionSchema = new Schema({
       require: true,
       trim: true
     },
-    Options: { // its must be array of objects
+    options: { // its must be array of objects
         type: { any: [Schema.Types.Mixed] }
     },
     image : {
@@ -23,6 +23,11 @@ var questionSchema = new Schema({
         type: Number,
         require: true 
     },
+    difficulty_level: {
+      type: String,
+      default: "",
+      trim: true
+  },
     status: {
       type: String,
       enum : ['active', 'inactive', 'delete'],
