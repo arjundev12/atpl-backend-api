@@ -1,4 +1,4 @@
-// const commenFunction = require('../common/Common')
+const commenFunction = require('../common/Common')
 // const UsersModel = require('../../models/users');
 // const NewsModel = require('../../models/news')
 // const BlogModel = require('../../models/blogs')
@@ -9,8 +9,8 @@ class Question {
             create: this.create.bind(this),
             get: this.get.bind(this),
             // uploadeImage: this.uploadeImage.bind(this),
-            // uploadeImagebase64: this.uploadeImagebase64.bind(this),
-            // updateNews: this.updateNews.bind(this),
+            uploadeImagebase64: this.uploadeImagebase64.bind(this),
+            delete: this.delete.bind(this),
             // updateBlogs: this.updateBlogs.bind(this)
             // submitReferral: this.submitReferral.bind(this)
         }
@@ -45,7 +45,12 @@ class Question {
                 obj.chapter_meta = chapter_meta
             }
             if (options) {
-                obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }, { D: options.D }]
+               
+                if(options.D ){
+                    obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }, { D: options.D }]
+                }else{
+                    obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }]
+                }
                 obj.correct_index = options.answer == 'A' ? 0 : options.answer == 'B' ? 1 : options.answer == 'C' ? 2 : 3
             }
             let saveData = new QuestionModel(obj)
@@ -81,6 +86,48 @@ class Question {
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async delete(req, res) {
+        try {
+        //    console.log("news",  req.query._id)
+            let data = await QuestionModel.findByIdAndRemove({_id: req.query._id})
+            // let data1 = await ChapterModel.deleteMany({subcategory: req.query._id})
+            // let data1 = await QuestionModel.deleteMany({subcategory: req.query._id})
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "delete successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+
+    async uploadeImage(req, res) {
+        try {
+            console.log("hiiiiiii", req.body, req.file)
+            if (req.file) {
+                res.json({ code: 200, success: true, message: 'uploade successfully', data: req.file })
+            } else {
+                res.json({ success: false, message: "Internal server error", })
+            }
+
+        } catch (error) {
+            res.json({ success: false, message: "Internal server error", })
+        }
+    }
+
+    async uploadeImagebase64(req, res) {
+        try {
+            if (req.body.image) {
+                let data = await commenFunction._uploadBase64image(req.body.image, 'questionImage')
+                var path2 = data.replace(/\\/g, "/");
+                res.json({ code: 200, success: true, message: 'uploade successfully', data: path2 })
+            } else {
+                res.json({ code: 400, success: false, message: "order_image is require", })
+            }
+
+        } catch (error) {
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
     }
     //////////////////////////////////////////////////////end//////////////////////////////////////////////
@@ -172,33 +219,8 @@ class Question {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
-    async uploadeImage(req, res) {
-        try {
-            console.log("hiiiiiii", req.body, req.file)
-            if (req.file) {
-                res.json({ code: 200, success: true, message: 'uploade successfully', data: req.file })
-            } else {
-                res.json({ success: false, message: "Internal server error", })
-            }
-
-        } catch (error) {
-            res.json({ success: false, message: "Internal server error", })
-        }
-    }
-    async uploadeImagebase64(req, res) {
-        try {
-            if (req.body.image) {
-                let data = await commenFunction._uploadBase64image(req.body.image, 'NewsAndBlogs')
-                var path2 = data.replace(/\\/g, "/");
-                res.json({ code: 200, success: true, message: 'uploade successfully', data: path2 })
-            } else {
-                res.json({ code: 400, success: false, message: "order_image is require", })
-            }
-
-        } catch (error) {
-            res.json({ code: 400, success: false, message: "Internal server error", })
-        }
-    }
+   
+  
 
 
 }

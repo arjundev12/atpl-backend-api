@@ -4,6 +4,7 @@
 // const BlogModel = require('../../models/blogs')
 const SubCategoryModel = require('../../models/admin/subcategories')
 const ChapterModel = require('../../models/admin/chapters')
+const QuestionModel = require('../../models/admin/questions')
 // const moment = require("moment");
 // const bcrypt = require('bcryptjs');
 // const jwt = require('jsonwebtoken')
@@ -16,7 +17,7 @@ class SubCategories {
             getList: this.getList.bind(this),
             // getListById: this.getListById.bind(this),
             // updateBlogs: this.updateBlogs.bind(this)
-          
+
 
             // submitReferral: this.submitReferral.bind(this)
         }
@@ -24,20 +25,20 @@ class SubCategories {
 
     async create(req, res) {
         try {
-            let { name, content,  image, category_meta} = req.body
-           console.log("hiiii consol", name, category_meta.name)
-            let getData = await SubCategoryModel.findOne({ name: name ,category: category_meta._id })
+            let { name, content, image, category_meta } = req.body
+            console.log("hiiii consol", name, category_meta.name)
+            let getData = await SubCategoryModel.findOne({ name: name, category: category_meta._id })
             if (getData) {
                 res.json({ code: 422, success: false, message: 'This name is all ready exist', })
             } else {
                 let obj = {}
-                if (name){
+                if (name) {
                     obj.name = name
                 }
-                if (content){
+                if (content) {
                     obj.content = content
                 }
-                if (category_meta){
+                if (category_meta) {
                     obj.category = category_meta._id
                     obj.category_meta = category_meta
                 }
@@ -60,7 +61,7 @@ class SubCategories {
                 lean: true,
             }
             let query = {}
-            if (req.body.searchData ){
+            if (req.body.searchData) {
                 query = { $or: [{ name: { $regex: req.body.searchData, $options: "i" } }, { content: { $regex: req.body.searchData, $options: "i" } }] }
             }
             let data = await SubCategoryModel.paginate(query, options)
@@ -73,9 +74,11 @@ class SubCategories {
     }
     async delete(req, res) {
         try {
-        //    console.log("news",  req.query._id)
-            let data = await SubCategoryModel.findByIdAndRemove({_id: req.query._id})
-            // let data1 = await ChapterModel.deleteMany({subcategory: req.query._id})
+            //    console.log("news",  req.query._id)
+            let data
+            data = await SubCategoryModel.findByIdAndRemove({ _id: req.query._id })
+            await ChapterModel.deleteMany({ subcategory: req.query._id })
+            await QuestionModel.deleteMany({ subcategory: req.query._id })
             // console.log("news", data)
             res.json({ code: 200, success: true, message: "delete successfully ", data: data })
         } catch (error) {
@@ -83,18 +86,18 @@ class SubCategories {
             res.status(500).json({ success: false, message: "Somthing went wrong", })
         }
     }
-    async getList(req, res){
+    async getList(req, res) {
         try {
-            if(req.query._id){
-                let data = await SubCategoryModel.find({category: req.query._id})
+            if (req.query._id) {
+                let data = await SubCategoryModel.find({ category: req.query._id })
                 res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
-            }else{
+            } else {
                 let data = await SubCategoryModel.find()
                 // console.log("news", data)
                 res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
 
             }
-           
+
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })
@@ -115,26 +118,26 @@ class SubCategories {
 
     async updateNews(req, res) {
         try {
-            let { title, content, id, image, status} = req.body
-           console.log("hiiii", title, content, id, status)
+            let { title, content, id, image, status } = req.body
+            console.log("hiiii", title, content, id, status)
             let getData = await NewsModel.findOne({ _id: id }).lean()
 
             if (getData) {
-                if(title){
-                    getData.title= title
+                if (title) {
+                    getData.title = title
                 }
-                if(content){
-                    getData.content= content
+                if (content) {
+                    getData.content = content
                 }
-                if(image){
-                    getData.image= image
+                if (image) {
+                    getData.image = image
                 }
-                if(status){
+                if (status) {
                     getData.status = status
                 }
                 console.log("upadate datata", getData, typeof status)
-                let update = await NewsModel.findOneAndUpdate({_id: id},getData, {new:true})
-                res.json({ code: 200, success: true, message: 'news update successfully',data: update })
+                let update = await NewsModel.findOneAndUpdate({ _id: id }, getData, { new: true })
+                res.json({ code: 200, success: true, message: 'news update successfully', data: update })
             } else {
                 res.json({ code: 400, success: false, message: 'this news is not exist', })
             }
@@ -146,26 +149,26 @@ class SubCategories {
     }
     async updateBlogs(req, res) {
         try {
-            let { title, content, id, image, status} = req.body
-           console.log("hiiii", title, content, id)
+            let { title, content, id, image, status } = req.body
+            console.log("hiiii", title, content, id)
             let getData = await BlogModel.findOne({ _id: id })
 
             if (getData) {
                 let obj = {}
-                if(title){
-                    obj.title= title
+                if (title) {
+                    obj.title = title
                 }
-                if(content){
-                    obj.content= content
+                if (content) {
+                    obj.content = content
                 }
-                if(image){
-                    obj.image= image
+                if (image) {
+                    obj.image = image
                 }
-                if(status){
-                    obj.status= status
+                if (status) {
+                    obj.status = status
                 }
-                let update = await BlogModel.findOneAndUpdate({_id: id},{$set:obj}, {new:true})
-                res.json({ code: 200, success: true, message: 'news update successfully',data: update })
+                let update = await BlogModel.findOneAndUpdate({ _id: id }, { $set: obj }, { new: true })
+                res.json({ code: 200, success: true, message: 'news update successfully', data: update })
             } else {
                 res.json({ code: 400, success: false, message: 'this news is not exist', })
             }
@@ -175,15 +178,15 @@ class SubCategories {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
-   
+
     async createBlogs(req, res) {
         try {
-            let { title, content, id, image} = req.body
+            let { title, content, id, image } = req.body
             let obj = {
                 title: title,
                 content: content,
                 created_by: '607e5136b24182674c4a8ed6',
-                image : image
+                image: image
             }
             let getData = await BlogModel.findOne({ title: title })
             if (getData) {
@@ -225,8 +228,8 @@ class SubCategories {
             res.json({ code: 400, success: false, message: "Internal server error", })
         }
     }
- 
-   
+
+
 }
 
 

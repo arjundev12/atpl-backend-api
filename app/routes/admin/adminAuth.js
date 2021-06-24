@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const uploadFile = require('../../middlewares/fileUploadHelper');
-const upload=uploadFile.uploadFileMethod('ProfileImage');
+const upload=uploadFile.uploadFileMethod('QuestionsImage');
 // create login routes
 const admin_controller = require('../../controllers/admin/admin');
 const user_controller = require('../../controllers/users/userAuth');

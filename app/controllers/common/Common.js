@@ -109,7 +109,7 @@ class Common {
             console.log(global.globalPath,"............",'driver', storagePath)
             let filename =`${Date.now()}_image`
              let base64Image = await this._validateBase64(base64)
-            let filepath = await base64Img.imgSync(base64Image, storagePath, filename);
+            let filepath = await base64Img.imgSync(base64, storagePath, filename);
             console.log("filepath", filepath)
             return filepath
         } catch (error) {
