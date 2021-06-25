@@ -18,16 +18,24 @@ class Question {
 
     async create(req, res) {
         try {
-            let { question, content, id, category_meta, subcategory_meta, chapter_meta, options, difficulty_level } = req.body
+            let { question, content, id, category_meta, subcategory_meta,chapter_meta, options, difficulty_level,info ,pin,flag} = req.body
             //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
 
             let obj = {}
             if (question) {
                 obj.question = question
-               
             }
             if (content) {
                 obj.content = content
+            }
+            if (info) {
+                obj.info = info
+            }
+            if (pin) {
+                obj.pin = pin
+            }
+            if (flag) {
+                obj.flag = flag
             }
             if (difficulty_level) {
                 obj.difficulty_level = difficulty_level
@@ -45,7 +53,6 @@ class Question {
                 obj.chapter_meta = chapter_meta
             }
             if (options) {
-               
                 if(options.D ){
                     obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }, { D: options.D }]
                 }else{

@@ -11,6 +11,15 @@ var questionSchema = new Schema({
       require: true,
       trim: true
     },
+    info: {
+      type: { any: [Schema.Types.Mixed] },
+    },
+    pin: {
+      type: { any: [Schema.Types.Mixed] },
+    },
+    flag: {
+      type: { any: [Schema.Types.Mixed] },
+    },
     options: { // its must be array of objects
         type: { any: [Schema.Types.Mixed] }
     },
