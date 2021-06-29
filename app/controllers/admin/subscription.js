@@ -16,10 +16,11 @@ class Subscription {
 
     async create(req, res) {
         try {
-            let { title, price, created_by} = req.body
+            let { title, price, created_by,days} = req.body
             let saveData = new SubscriptionModel({
                 title: title,
-                price: price,
+                price: Number(price),
+                days: days,
                 created_by: created_by
             })
            let data= await saveData.save();

@@ -55,7 +55,7 @@ class Faq {
         try {
             let id = req.query._id
             //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
-            let getdata = await FaqModel.findOne({_id: id})
+            let getdata = await FaqModel.findOne({_id: id}).populate('created_by').lean()
             
             res.json({ code: 200, success: true, message: 'Update successfully',data:getdata })
            

@@ -27,8 +27,8 @@ class uploadImage{
               let selt=this
                let storage =multer.diskStorage({
                    destination: function (req, file, cb) {
-                                 
-                   cb(null, `./public/${selt.folderName}`)
+                                 console.log("selt.folderName",selt.folderName)
+                   cb(null, `./public/QuestionsSheets`)
                     },
                    filename: function (req, file, cb) {
                    cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
@@ -38,8 +38,8 @@ class uploadImage{
                storage: storage,
                limits: { fileSize: 1024 * 1024 * 201 },
                fileFilter: function (req, file, cb) {
-                 
-                   if (file.mimetype == 'image/png' || file.mimetype == 'image/gif' || file.mimetype == 'application/svg' || file.mimetype == 'image/jpeg' || file.mimetype == 'video/quicktime' || file.mimetype=='video/avi' || file.mimetype=='video/x-flv' || file.mimetype=='video/mp4') {
+                //  console.log("file.mimetype", file.mimetype)
+                   if (file.mimetype == 'image/png' || file.mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'|| file.mimetype == 'application/xlsx' || file.mimetype == 'image/gif' || file.mimetype == 'application/svg' || file.mimetype == 'image/jpeg' || file.mimetype == 'video/quicktime' || file.mimetype=='video/avi' || file.mimetype=='video/x-flv' || file.mimetype=='video/mp4') {
                        return cb(null, true);
                    } else {
                        cb(JSON.stringify({

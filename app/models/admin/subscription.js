@@ -10,6 +10,10 @@ const subscriptionSchema = Schema({
         default: ""
     },
     price: {
+        type: Number,
+        default: 0
+    },
+    days: {
         type: String,
         default: ""
     },

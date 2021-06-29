@@ -24,18 +24,12 @@ app.use(bodyParser.urlencoded({ limit: "220mb", extended: true, parameterLimit: 
 app.use(express.urlencoded({
     extended: true
 }));
-app.use(upload.array()); 
-// app.use(express.static('public'));
-// app.use( express.static(path.join(__dirname, '/')))
 // app.use(upload.array()); 
 app.use(expressValidator()); //middleware for validation
 
 global.globalPath =__dirname;
 app.use(express.static('public'));
 app.use( express.static(path.join(__dirname, '/')))
-// app.use(express.static(path.join(__dirname, 'public')));
-// console.log("hiiiiii", path.join(__dirname, '../React-Admin-Panel-Bee/build'))
-// app.use(express.static(path.join(__dirname, '../React-Admin-Panel-Bee/build')));
 app.use(function (req, res, next) { // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*'); // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS'); // Request headers you wish to allow
@@ -52,11 +46,6 @@ app.use(function (req, res, next) { // Website you wish to allow to connect
 //   }
     
 app.use(cors());
-// app.get('/', (req,res) => {
-//     res.sendFile(path.join(__dirname, '../React-Admin-Panel-Bee/build/index.html'));
-//   });
-
-// app.use('/api/user', require('./app/routes/users'));
 app.use('/api/admin', require('./app/routes/admin'));
 
 server.listen(PORT, function (err) {

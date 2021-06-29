@@ -10,11 +10,7 @@ var UsersSchema = new Schema({
     type: String,
     trim: true,
   },
-  reddit_username: {
-    type: String,
-    trim: true,
-    default:""
-  },
+  
   email: {
     type: String,
     trim: true,
@@ -78,10 +74,6 @@ var UsersSchema = new Schema({
     values: ['1', '0','2'],
     default: '0'
   },
-  current_rank: {
-    type: String,
-    default: '0'
-  },
   // values: ['facebook', 'google', 'apple', 'manual']
   login_type: {
     type: String,
@@ -118,22 +110,9 @@ var UsersSchema = new Schema({
   ref_to_users: {
     type: { any: [Schema.Types.Mixed] }
   },
-  minner_Activity:{
-    type: Boolean,
-    default:false
-  },
-  last_mining_time:{
-    type: String,
-    trim: true,
-    default:"0"
-  },
   submit_referral:{
     type: Boolean,
     default:false
-  },
-  from_referral_id:{
-    type: String,
-    trim: true
   },
   profile_details: {
     type: { any: [Schema.Types.Mixed] }

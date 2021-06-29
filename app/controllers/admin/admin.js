@@ -13,6 +13,7 @@ class adminAuth {
         return {
             loginAdmin: this.loginAdmin.bind(this),
             getUser: this.getUser.bind(this),
+            adminAddUser: this.adminAddUser.bind(this),
             AdminUpdateUser: this.AdminUpdateUser.bind(this),
             getTransaction: this.getTransaction.bind(this),
             getKycDoc: this.getKycDoc.bind(this),
@@ -73,6 +74,89 @@ class adminAuth {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
+    async adminAddUser(req, res) {
+            try {
+                let saveData
+                let data
+                let stoken
+                let error
+                let { name, email,username, password } = req.body
+                // if (login_type == 'manual') {
+                  let  getUser = await UsersModel.findOne({ $and: [{ email: email }, { login_type: 'manual' }, { user_type: 'user' }] })
+                    console.log("getUser", getUser)
+                    if (getUser) {
+                        console.log("getUser", getUser)
+                        error = true
+                    } else {
+                        const salt = bcrypt.genSaltSync(10);
+                        const hash = bcrypt.hashSync(password, salt);
+                        saveData = new UsersModel({
+                            name: name,
+                            username: username,
+                            email: email,
+                            password: hash,
+                            login_type: 'manual',
+                            Referral_id: ""
+                        })
+                        data = await saveData.save();
+                    }
+                // }
+                //  else if (social_media_key && social_media_key != "") {
+                //     getUser = await UsersModel.findOne({ $and: [{ email: email }, { login_type: login_type }, { user_type: 'user' }] })
+                //     if (getUser) {
+                //         data = await UsersModel.findOneAndUpdate(
+                //             {
+                //                 $and: [{ email: req.body.email }, { login_type: login_type }]
+                //             },
+                //             {
+                //                 $set: { social_media_key: social_media_key }
+                //             }, { new: true }).lean()
+    
+                //             data.social_status = "old"
+                //     } else {
+                //         let obj =  {
+                //             name: name? name: "",
+                //             email: email,
+                //             username: "",
+                //             login_type: login_type,
+                //             Referral_id: await this._generateRefID(),
+                //             social_media_key: social_media_key
+    
+                //         }
+                //             // if(username){
+                //             //     obj.usename = username
+                //             // }else{
+                //             //     obj.usename = ""  
+                //             // }
+                          
+                //         saveData = new UsersModel(obj)
+                //        let data1= await saveData.save();
+                //          data= await UsersModel.findOne({_id:data1._id }).lean()
+                //         data.social_status = "new"
+                //         await commenFunction._createWallet(data._id, 'user')
+                //     }
+    
+                // }
+                if (data) {
+                    // stoken = {
+                    //     _id: data._id,
+                    //     email: data.email
+                    // }
+                    // data.token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
+                    return res.json({ code: 200, success: true, message: 'Data save successfully', data: data })
+                } else if (error) {
+                    res.json({ code: 404, success: false, message: 'Email already exist', data: getUser.email })
+                } else {
+                    res.json({ success: false, message: "Somthing went wrong", })
+                }
+    
+            } catch (error) {
+                console.log("Error in catch", error)
+                res.json({ success: false, message: "Somthing went wrong", })
+            }
+    
+    }
+    //////////////////////////////////////////////////////////end///////////////////////////////////////
     async getUserKyc(req, res) {
         try {
             let options = {
