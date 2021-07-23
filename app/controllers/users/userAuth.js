@@ -4,14 +4,25 @@ const moment = require("moment");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const _ = require('underscore');
-
+const CategoryModel = require('../../models/admin/categories')
+// const moment = require("moment");
+// const bcrypt = require('bcryptjs');
+// const jwt = require('jsonwebtoken')
+const SubCategoryModel = require('../../models/admin/subcategories')
+const ChapterModel = require('../../models/admin/chapters')
+const QuestionModel = require('../../models/admin/questions')
 class users {
     constructor() {
         return {
             signUp: this.signUp.bind(this),
             verifyOtp: this.verifyOtp.bind(this),
             login: this.login.bind(this),
-            updateProfile: this.updateProfile.bind(this)
+            updateProfile: this.updateProfile.bind(this),
+            getCategoryList: this.getCategoryList.bind(this),
+            getSubCategoryList: this.getSubCategoryList.bind(this),
+            getChapterList: this.getChapterList.bind(this),
+            getQuestionlist: this.getQuestionlist.bind(this),
+            // getCategoryList: this.getCategoryList.bind(this)
         }
     }
     //create sign_up Api
@@ -127,12 +138,11 @@ class users {
                     _id: data._id,
                     user_id: data.user_id
                 }
-
+                let data1 = await UsersModel.findOne({ user_id: data.user_id }).lean()
                 console.log("dataatatat", data)
                 // let token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
-                let data1 = {}
                 data1.token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
-                data1.dictionary = data
+                // data1.dictionary = data
                 return res.json({ code: 200, success: true, message: 'Data save successfully', data: data1 })
             } else if (error) {
                 res.json({ code: 404, success: false, message: 'Email/Number already exist', data: getUser.user_id })
@@ -161,9 +171,9 @@ class users {
                             user_id: getUser.user_id
                         }
                         // getUser.token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
-                        let data1 = {}
+                        let data1 = getUser
                         data1.token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
-                        data1.dictionary = getUser
+                        // data1.dictionary = getUser
                         res.json({ code: 200, success: true, message: 'login successfully', data: data1 })
                     } else {
                         res.json({ code: 404, success: false, message: 'invalid password', })
@@ -209,7 +219,7 @@ class users {
                         getUser.email = email
                     }
                     let data1 = {}
-                    data1.dictionary = await UsersModel.findOneAndUpdate({ user_id: user_id }, { $set: getUser },{new: true})
+                    data1 = await UsersModel.findOneAndUpdate({ user_id: user_id }, { $set: getUser }, { new: true })
                     res.json({ code: 200, success: true, message: 'login successfully', data: data1 })
                 }
             } else {
@@ -220,6 +230,61 @@ class users {
             res.json({ success: false, message: "Somthing went wrong", })
         }
     }
+
+    async getCategoryList(req, res) {
+        try {
+            let data = await CategoryModel.find({ status: 'active' })
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async getSubCategoryList(req, res) {
+        try {
+            if (req.query._id) {
+                let data = await SubCategoryModel.find({ category: req.query._id, status: 'active' },{category_meta:0})
+                res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async getChapterList(req, res){
+        try {
+            let data = await ChapterModel.find({subcategory: req.query._id},{subcategory_meta:0,category_meta:0})
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async getQuestionlist(req, res) {
+        try {
+            let {category, subcategory, chapter, page,limit }= req.body
+            let options = {
+                page: Number(req.body.page) || 1,
+                limit: Number(req.body.limit) || 10,
+                sort: { createdAt: -1 },
+                lean: true,
+            }
+            let query = {}
+            if(category){ query.category = req.body.category }
+            if(subcategory){query.subcategory = req.body.subcategory}
+            if(chapter){ query.chapter = req.body.chapter}
+            let data = await QuestionModel.paginate(query, options)
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////end aipl/////////////////////////////////////////
+
     async verifyOtp(req, res) {
         try {
 
