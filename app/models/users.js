@@ -6,43 +6,81 @@ var UsersSchema = new Schema({
     type: String,
     trim: true
   },
-  username: {
+  user_id:{
+    type: String,
+    trim: true
+  },
+  profile_pic: {
     type: String,
     trim: true,
   },
-  
   email: {
     type: String,
     trim: true,
-    require: true
+    default: ""
+    // require: true
   },
   password: {
     type: String,
     trim: true,
   },
-  number: {
+  contact_number: {
     type: String,
     trim: true,
     default:""
   },
-  profile_pic: {
+  gender: {
     type: String,
     trim: true,
     default:""
+  },
+  address: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  state: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  country: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  pin: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  country_code: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  DOB: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  social_id: {
+    type: String,
+    trim: true,
+    default:""
+  },
+  social_type:  {
+    type: String,
+    enum: ['facebook', 'google', 'apple', 'manual']
   },
   block_user: {
     type: String,
     enum: ['1', '0'],
     default: '0'
   },
-  country: {
+  device_type: {
     type: String,
     trim: true,
-  },
-  country_code: {
-    type: String,
-    trim: true,
-    default: ""
   },
   user_type: {
     type: String,
@@ -69,48 +107,16 @@ var UsersSchema = new Schema({
     values: ['1', '0','2'],
     default: '0'
   },
-  is_complete_kyc: {
-    type: String,
-    values: ['1', '0','2'],
-    default: '0'
-  },
-  // values: ['facebook', 'google', 'apple', 'manual']
-  login_type: {
-    type: String,
-    enum: ['facebook', 'google', 'apple', 'manual']
-  },
-  social_media_key: {
-    type: String,
-  },
   is_super_admin: {
     type: String,
     values: ['0', '1'],
     default: '0'
-  },
-  location: {
-    type: String,
-    trim: true,
-  },
-  Referral_id: {
-    type: String,
-    trim: true,
   },
   forgot_otp: {
     type: String,
     trim: true,
   },
   forgot_otp_verify: {
-    type: Boolean,
-    default:false
-  },
-  // {
-  //   status:
-  //   _id
-  // }
-  ref_to_users: {
-    type: { any: [Schema.Types.Mixed] }
-  },
-  submit_referral:{
     type: Boolean,
     default:false
   },

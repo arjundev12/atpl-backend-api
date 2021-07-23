@@ -5,7 +5,7 @@ const uploadFile = require('../../middlewares/fileUploadHelper');
 const upload=uploadFile.uploadFileMethod('QuestionsImage');
 // create login routes
 const admin_controller = require('../../controllers/admin/admin');
-const user_controller = require('../../controllers/users/userAuth');
+// const user_controller = require('../../controllers/users/userAuth');
 const wallet = require('../../controllers/admin/wallet')
 const validationData= require('../../middlewares/FrontendValidator');
 const Auth = require("../../middlewares/loginToken")
@@ -19,8 +19,8 @@ router.post('/get-kyc-user',Auth.jwtVerify, admin_controller.getUserKyc)
 router.get('/wallet',Auth.jwtVerify, wallet.getWallet)
 router.get('/get-total',Auth.jwtVerify, admin_controller.getTotalCount)
 
-router.post('/update-profile',Auth.jwtVerify,validationData.update, user_controller.UpdateProfile)
-router.get('/user-details',Auth.jwtVerify, user_controller.getUserDetails)
+// router.post('/update-profile',Auth.jwtVerify,validationData.update, user_controller.UpdateProfile)
+// router.get('/user-details',Auth.jwtVerify, user_controller.getUserDetails)
 ////////////////////////////////////////////////////////////////
 router.post('/add-user', admin_controller.adminAddUser)
 router.post('/get-user', admin_controller.getUser)

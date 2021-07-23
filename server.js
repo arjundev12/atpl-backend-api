@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ limit: "220mb", extended: true, parameterLimit: 
 app.use(express.urlencoded({
     extended: true
 }));
-// app.use(upload.array()); 
+app.use(upload.array()); 
 app.use(expressValidator()); //middleware for validation
 
 global.globalPath =__dirname;
@@ -47,7 +47,7 @@ app.use(function (req, res, next) { // Website you wish to allow to connect
     
 app.use(cors());
 app.use('/api/admin', require('./app/routes/admin'));
-
+app.use('/api/user', require('./app/routes/users'));
 server.listen(PORT, function (err) {
     if (err) {
         console.log(err);

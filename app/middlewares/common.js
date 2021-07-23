@@ -9,8 +9,10 @@
 // var jwt = require('jsonwebtoken');
 
 // const nodemailer = require('nodemailer');
-// const fs = require('fs');
+const fs = require('fs');
 // const transactionModel = require('../models/transactions');
+const base64Img = require('base64-img')
+var sharp = require('sharp');
 
 class Common {
     constructor() {
@@ -23,9 +25,46 @@ class Common {
             // _createHistory: this._createHistory.bind(this),
             // _updateRank: this._updateRank.bind(this),
             // _getAllRank: this._getAllRank.bind(this)
+            _uploadBase64image: this._uploadBase64image.bind(this),
+            _validateBase64: this._validateBase64.bind(this)
+        }
+    }
+    async _uploadBase64image(base64,child_path) {
+        try {
+            let parant_path = 'public'
+            let storagePath = `${parant_path}/${child_path}`;
+            if (!fs.existsSync(parant_path)) {
+                fs.mkdirSync(parant_path);
+            }
+            if(!fs.existsSync(storagePath)){
+                fs.mkdirSync(storagePath);
+             }
+            console.log(global.globalPath,"............",'driver', storagePath)
+            let filename =`${Date.now()}_image`
+             let base64Image = await this._validateBase64(base64)
+            let filepath = await base64Img.imgSync(base64, storagePath, filename);
+            console.log("filepath", filepath)
+            return filepath
+        } catch (error) {
+            console.error("error in _uploadBase64image", error)
         }
     }
 
+    async _validateBase64( base64Image, maxHeight = 640, maxWidth = 640 ){
+        try {
+            const destructImage = base64Image.split(";");
+            const mimType = destructImage[0].split(":")[1];
+            const imageData = destructImage[1].split(",")[1];
+
+            let resizedImage = Buffer.from(imageData, "base64")
+            resizedImage = await sharp(resizedImage).resize(maxHeight, maxWidth).toBuffer()
+            return `data:${mimType};base64,${resizedImage.toString("base64")}`
+            
+        } catch (error) {
+            console.error("error in _validateBase64", error)
+        }
+    }
+    //////////////////////////////////end aipl///////////////////////////////////////////
     async _updateRank(id) {
         try {
             console.log("index,,,,,,", typeof id,)
