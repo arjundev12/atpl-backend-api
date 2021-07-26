@@ -18,4 +18,11 @@
     defaultSub: 'Sending with SendGrid is Fun',
     defaultMail: 'arjun@winklix.com',
     fromMail : 'arjun@winklix.com',
+    subcategoryImageArray : [
+      "public/ProfileImage/1627025660415_image.png",
+      "public/ProfileImage/1627041273210_image.png",
+      "public/ProfileImage/1627041375563_image.png",
+      "public/ProfileImage/1627041495061_image.png",
+      
+    ]
  }

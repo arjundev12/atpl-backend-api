@@ -8,9 +8,11 @@ const CategoryModel = require('../../models/admin/categories')
 // const moment = require("moment");
 // const bcrypt = require('bcryptjs');
 // const jwt = require('jsonwebtoken')
+// const Constant = require('../../utilities/constants')
 const SubCategoryModel = require('../../models/admin/subcategories')
 const ChapterModel = require('../../models/admin/chapters')
-const QuestionModel = require('../../models/admin/questions')
+const QuestionModel = require('../../models/admin/questions');
+const constants = require('../../utilities/constants');
 class users {
     constructor() {
         return {
@@ -244,7 +246,10 @@ class users {
     async getSubCategoryList(req, res) {
         try {
             if (req.query._id) {
-                let data = await SubCategoryModel.find({ category: req.query._id, status: 'active' },{category_meta:0})
+                let data ={}
+                data.categorylist= await SubCategoryModel.find({ category: req.query._id, status: 'active' },{category_meta:0}).lean()
+                data.images = constants.subcategoryImageArray
+                // data.push(constants.subcategoryImageArray)
                 res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
             }
         } catch (error) {
