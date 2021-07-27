@@ -13,6 +13,7 @@ const SubCategoryModel = require('../../models/admin/subcategories')
 const ChapterModel = require('../../models/admin/chapters')
 const QuestionModel = require('../../models/admin/questions');
 const constants = require('../../utilities/constants');
+const MocktestModel = require('../../models/admin/mocketest');
 class users {
     constructor() {
         return {
@@ -24,7 +25,10 @@ class users {
             getSubCategoryList: this.getSubCategoryList.bind(this),
             getChapterList: this.getChapterList.bind(this),
             getQuestionlist: this.getQuestionlist.bind(this),
-            // getCategoryList: this.getCategoryList.bind(this)
+            submitTest: this.submitTest.bind(this),
+            startTest: this.startTest.bind(this),
+            // getQuestionlist: this.getQuestionlist.bind(this),
+            // submitTest: this.submitTest.bind(this)
         }
     }
     //create sign_up Api
@@ -246,8 +250,8 @@ class users {
     async getSubCategoryList(req, res) {
         try {
             if (req.query._id) {
-                let data ={}
-                data.categorylist= await SubCategoryModel.find({ category: req.query._id, status: 'active' },{category_meta:0}).lean()
+                let data = {}
+                data.categorylist = await SubCategoryModel.find({ category: req.query._id, status: 'active' }, { category_meta: 0 }).lean()
                 data.images = constants.subcategoryImageArray
                 // data.push(constants.subcategoryImageArray)
                 res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
@@ -257,9 +261,9 @@ class users {
             res.status(500).json({ success: false, message: "Somthing went wrong", })
         }
     }
-    async getChapterList(req, res){
+    async getChapterList(req, res) {
         try {
-            let data = await ChapterModel.find({subcategory: req.query._id},{subcategory_meta:0,category_meta:0})
+            let data = await ChapterModel.find({ subcategory: req.query._id }, { subcategory_meta: 0, category_meta: 0 })
             // console.log("news", data)
             res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
         } catch (error) {
@@ -269,20 +273,93 @@ class users {
     }
     async getQuestionlist(req, res) {
         try {
-            let {category, subcategory, chapter, page,limit }= req.body
+            let { category, subcategory, chapter, difficulty_level, page, limit } = req.body
             let options = {
                 page: Number(req.body.page) || 1,
                 limit: Number(req.body.limit) || 10,
                 sort: { createdAt: -1 },
                 lean: true,
+                select: {
+                    "question": 1,
+                    "options": 1,
+                    // "chapter_meta": 1,
+                    "info": 1,
+                    "difficulty_level": 1,
+                    "category_meta.name": 1,
+                    "subcategory_meta.name": 1,
+                    "chapter_meta.name": 1,
+                    "chapter": 1
+                    // 'question options info chapter_meta'
+                }
             }
             let query = {}
-            if(category){ query.category = req.body.category }
-            if(subcategory){query.subcategory = req.body.subcategory}
-            if(chapter){ query.chapter = req.body.chapter}
+            if (category) { query.category = req.body.category }
+            if (subcategory) {
+                // query['chapter_meta.subcategory'] = req.body.subcategory
+                query.subcategory = req.body.subcategory
+            }
+            if (difficulty_level) {
+                query.difficulty_level = req.body.difficulty_level
+            }
+            if (chapter) {
+                query.chapter = req.body.chapter
+            }
+            console.log("query", query)
             let data = await QuestionModel.paginate(query, options)
             // console.log("news", data)
             res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async startTest(req, res) {
+        try {
+            const { user_id, chapter_id } = req.body
+            // let data ={}
+            const start_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
+            let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            if (data) {
+                data.start_time = start_time
+                data.online_status ='online'
+                data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
+                    { $set: data },{new:true}).lean()
+                res.json({ code: 200, success: true, message: "Test update successfully ", data: data })
+            } else {
+                let saveData = new MocktestModel({
+                    user_id: user_id,
+                    start_time: start_time,
+                    chapter: chapter_id,
+                    online_status: 'online',
+                })
+                let data1 = await saveData.save();
+                res.json({ code: 200, success: true, message: "Test create successfully ", data: data1 })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    ///// enum: ['online', 'complete', 'pending', ],
+    async submitTest(req, res) {
+        try {
+            const { user_id, chapter_id, attampt_question } = req.body
+            // let data ={}
+            const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
+            let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            if (data.online_status=='complete') {
+                res.json({ code: 200, success: true, message: "Already submit successfully ", data: data })
+            }else if (data) {
+                data.end_time = end_time
+                data.attampt_question = attampt_question
+                data.online_status = 'complete'
+
+                data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
+                    { $set: data },{new: true}).lean()
+                res.json({ code: 200, success: true, message: "submit successfully ", data: data })
+            } else {
+                res.json({ code: 200, success: true, message: "first need to start test ", })
+            }
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })

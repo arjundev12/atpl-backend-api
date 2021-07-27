@@ -18,5 +18,8 @@ router.get('/get-subcategory', user_controller.getSubCategoryList)
 router.get('/get-chapters', user_controller.getChapterList)
 router.post('/question-list', user_controller.getQuestionlist)
 
+router.post('/submit-test', user_controller.submitTest)
+router.post('/start-test', user_controller.startTest)
+
 module.exports = router;
 
