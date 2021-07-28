@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ limit: "220mb", extended: true, parameterLimit: 
 app.use(express.urlencoded({
     extended: true
 }));
-app.use(upload.array()); 
+// app.use(upload.array()); 
 app.use(expressValidator()); //middleware for validation
 
 global.globalPath =__dirname;

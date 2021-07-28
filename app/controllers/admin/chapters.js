@@ -22,7 +22,7 @@ class Chapters {
 
     async create(req, res) {
         try {
-            let { name, content, id, category_meta,subcategory_meta } = req.body
+            let { name, content, id, category_meta,subcategory_meta,time,is_mocktest,questions } = req.body
         //    console.log("category_meta in chapters", name, content, category_meta)
             let getData = await ChapterModel.findOne({ name: name ,subcategory:subcategory_meta._id})
             if (getData) {
@@ -31,6 +31,18 @@ class Chapters {
                 let obj = {}
                 if (name){
                     obj.name = name
+                }
+                if (is_mocktest =='true'){
+                    obj.is_mocktest = true
+                }
+                if (is_mocktest =='false'){
+                    obj.is_mocktest = false
+                }
+                if (time ){
+                    obj.time = time
+                }
+                if (questions ){
+                    obj.questions = questions
                 }
                 if (content){
                     obj.content = content

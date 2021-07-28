@@ -11,6 +11,20 @@ var chapterSchema = new Schema({
         type: String,
         trim: true
     },
+    is_mocktest : {
+        type: Boolean,
+        default: false
+    },
+    time : {
+        type: String,
+        trim: true,
+        default: '20min'
+    },
+    questions : {
+        type: String,
+        trim: true,
+        default: "15"
+    },
     image: {
         type: String,
         default: "",
