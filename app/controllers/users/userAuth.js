@@ -79,18 +79,18 @@ class users {
                 if (getUser) {
                     error = true
                 } else {
-                    let imagePath
-                    if (profile_pic && profile_pic != "") {
-                        let data = await commenFunction._uploadBase64image(profile_pic, 'ProfileImage')
-                        imagePath = data.replace(/\\/g, "/");
-                    }
+                    // let imagePath
+                    // if (profile_pic && profile_pic != "") {
+                    //     let data = await commenFunction._uploadBase64image(profile_pic, 'ProfileImage')
+                    //     imagePath = data.replace(/\\/g, "/");
+                    // }
 
                     const salt = bcrypt.genSaltSync(10);
                     const hash = bcrypt.hashSync(password, salt);
                     saveData = new UsersModel({
                         name: name,
                         user_id: user_id,
-                        profile_pic: imagePath,
+                        profile_pic: profile_pic,
                         email: email,
                         password: hash,
                         contact_number: contact_number,
@@ -112,16 +112,16 @@ class users {
                 if (getUser) {
                     data = getUser
                 } else {
-                    let imagePath
-                    if (profile_pic && profile_pic != "") {
-                        let data = await commenFunction._uploadBase64image(profile_pic, 'ProfileImage')
-                        imagePath = data.replace(/\\/g, "/");
-                    }
+                    // let imagePath
+                    // if (profile_pic && profile_pic != "") {
+                    //     let data = await commenFunction._uploadBase64image(profile_pic, 'ProfileImage')
+                    //     imagePath = data.replace(/\\/g, "/");
+                    // }
                     // const salt = bcrypt.genSaltSync(10);
                     // const hash = bcrypt.hashSync(password, salt);
                     saveData = new UsersModel({
                         name: name,
-                        profile_pic: imagePath,
+                        profile_pic: profile_pic,
                         user_id: user_id,
                         email: email,
                         contact_number: contact_number,
@@ -206,8 +206,9 @@ class users {
                         getUser.name = name
                     }
                     if (profile_pic && profile_pic != "") {
-                        let data = await commenFunction._uploadBase64image(profile_pic, 'ProfileImage')
-                        getUser.profile_pic = data.replace(/\\/g, "/");
+                        // let data = await commenFunction._uploadBase64image(profile_pic, 'ProfileImage')
+                        // getUser.profile_pic = data.replace(/\\/g, "/");
+                        getUser.profile_pic = profile_pic
                     }
                     if (contact_number && contact_number != "") {
                         getUser.contact_number = contact_number
@@ -402,7 +403,6 @@ class users {
             console.log("error in catch", error)
             res.json({ success: false, message: "Somthing went wrong", data: null })
         }
-
     }
 
 }
