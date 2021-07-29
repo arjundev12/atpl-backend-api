@@ -43,6 +43,7 @@ class Chapters {
                 }
                 if (questions ){
                     obj.questions = questions
+                    obj.marks = questions
                 }
                 if (content){
                     obj.content = content

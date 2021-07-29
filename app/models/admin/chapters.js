@@ -25,6 +25,11 @@ var chapterSchema = new Schema({
         trim: true,
         default: "15"
     },
+    marks : {
+        type: String,
+        trim: true,
+        default: "15"
+    },
     image: {
         type: String,
         default: "",
