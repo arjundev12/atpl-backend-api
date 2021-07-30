@@ -1,5 +1,5 @@
 // const commenFunction = require('../common/Common')
-// const UsersModel = require('../../models/users');
+// const UsersModel = require('../../models/user/users');
 // const NewsModel = require('../../models/news')
 // const BlogModel = require('../../models/blogs')
 const CategoryModel = require('../../models/admin/categories')

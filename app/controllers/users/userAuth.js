@@ -1,5 +1,5 @@
 const commenFunction = require('../../middlewares/common')
-const UsersModel = require('../../models/users');
+const UsersModel = require('../../models/user/users');
 const moment = require("moment");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
@@ -14,6 +14,8 @@ const ChapterModel = require('../../models/admin/chapters')
 const QuestionModel = require('../../models/admin/questions');
 const constants = require('../../utilities/constants');
 const MocktestModel = require('../../models/admin/mocketest');
+const SubscriptionModel = require('../../models/admin/subscription');
+const BuySubscriptionModel = require('../../models/user/buySubscription');
 class users {
     constructor() {
         return {
@@ -27,8 +29,9 @@ class users {
             getQuestionlist: this.getQuestionlist.bind(this),
             submitTest: this.submitTest.bind(this),
             startTest: this.startTest.bind(this),
-            // getQuestionlist: this.getQuestionlist.bind(this),
-            // submitTest: this.submitTest.bind(this)
+            getPlans: this.getPlans.bind(this),
+            getPlanById: this.getPlanById.bind(this),
+            buySubscription: this.buySubscription.bind(this)
         }
     }
     //create sign_up Api
@@ -276,8 +279,8 @@ class users {
         try {
             let { category, subcategory, chapter, difficulty_level, page, limit } = req.body
             let options = {
-                page: Number(req.body.page) || 1,
-                limit: Number(req.body.limit) || 10,
+                page: Number(page) || 1,
+                limit: Number(limit) || 20,
                 sort: { createdAt: -1 },
                 lean: true,
                 select: {
@@ -322,9 +325,9 @@ class users {
             let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
             if (data) {
                 data.start_time = start_time
-                data.online_status ='online'
+                data.online_status = 'online'
                 data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
-                    { $set: data },{new:true}).lean()
+                    { $set: data }, { new: true }).lean()
                 res.json({ code: 200, success: true, message: "Test update successfully ", data: data })
             } else {
                 let saveData = new MocktestModel({
@@ -348,15 +351,15 @@ class users {
             // let data ={}
             const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
             let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
-            if (data.online_status=='complete') {
+            if (data.online_status == 'complete') {
                 res.json({ code: 200, success: true, message: "Already submit successfully ", data: data })
-            }else if (data) {
+            } else if (data) {
                 data.end_time = end_time
                 data.attampt_question = attampt_question
                 data.online_status = 'complete'
 
                 data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
-                    { $set: data },{new: true}).lean()
+                    { $set: data }, { new: true }).lean()
                 res.json({ code: 200, success: true, message: "submit successfully ", data: data })
             } else {
                 res.json({ code: 200, success: true, message: "first need to start test ", })
@@ -366,6 +369,82 @@ class users {
             res.status(500).json({ success: false, message: "Somthing went wrong", })
         }
     }
+
+    async getPlans(req, res) {
+        try {
+            let options = {
+                page: Number(req.body.page) || 1,
+                limit: Number(req.body.limit) || 10,
+                sort: { createdAt: -1 },
+                lean: true,
+            }
+            let query = {}
+            if (req.body.searchData) {
+                query = { $or: [{ question: { $regex: req.body.searchData, $options: "i" } }, { content: { $regex: req.body.searchData, $options: "i" } }] }
+            }
+            let data = await SubscriptionModel.paginate(query, options)
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async getPlanById(req, res) {
+        try {
+            let id = req.query._id
+            //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
+            let getdata = await SubscriptionModel.findOne({ _id: id })
+
+            res.json({ code: 200, success: true, message: 'Update successfully', data: getdata })
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    async buySubscription(req, res) {
+        try {
+            const { user_id, subscription_id, } = req.body
+            let getPlane = await SubscriptionModel.findOne({ _id: subscription_id }).lean()
+            if (getPlane) {
+                const buy_date = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss");
+                const expire_date = moment(buy_date, "DD.MM.YYYY HH.mm.ss").add(Number(getPlane.days), 'days');
+                console.log("buy_date  expire_date", buy_date, expire_date)
+                let getBuyPlane = await BuySubscriptionModel.findOne({ subscription_id: subscription_id, user_id: user_id }).lean()
+                let data = {}
+                if (getBuyPlane) {
+                    data = await BuySubscriptionModel.findOneAndUpdate({ subscription_id: subscription_id, user_id: user_id },
+                        {
+                            $set: {
+                                buy_date: buy_date,
+                                expire_date: expire_date,
+                                status: 'active',
+                                // buy_count: getBuyPlane.buy_count +1
+                            },
+                            $inc :{buy_count:1}
+                           
+                        }, {new: true}).lean()
+                } else {
+                    let saveData = new BuySubscriptionModel({
+                        user_id: user_id,
+                        subscription_id: subscription_id,
+                        buy_date: buy_date,
+                        expire_date: expire_date
+                    })
+                    data = await saveData.save();
+                }
+
+                res.json({ code: 200, success: true, message: 'Buy successfully', data: data })
+            } else {
+                res.json({ code: 404, success: true, message: 'Data not found' })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////////////////end aipl/////////////////////////////////////////
 
     async verifyOtp(req, res) {

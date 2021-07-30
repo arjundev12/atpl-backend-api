@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 // const request = require('request');
-const UsersModel = require('../models/users')
+const UsersModel = require('../models/user/users')
 console.log("process of env", process.env.SUPERSECRET)
 
 class TokenVerification {

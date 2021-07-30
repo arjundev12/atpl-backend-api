@@ -20,6 +20,11 @@ router.post('/question-list', user_controller.getQuestionlist)
 
 router.post('/submit-test', user_controller.submitTest)
 router.post('/start-test', user_controller.startTest)
+///////////////////////////////////subscription//////////////////////////////////////
+
+router.post('/get-plans', user_controller.getPlans)
+router.get('/get-plan-by-id', user_controller.getPlanById)
+router.post('/buy-subscription', user_controller.buySubscription)
 
 module.exports = router;
 

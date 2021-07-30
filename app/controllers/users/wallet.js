@@ -1,5 +1,5 @@
 const commenFunction = require('../common/Common')
-const UsersModel = require('../../models/users');
+const UsersModel = require('../../models/user/users');
 const moment = require("moment");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
