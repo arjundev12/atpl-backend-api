@@ -56,9 +56,30 @@ class Question {
             }
             if (options) {
                 if (options.D) {
-                    obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }, { D: options.D }]
+                    obj.options = [{
+                        title: options.A,
+                        name: "A"
+                    }, {
+                        title: options.B,
+                        name: "B"
+                    }, {
+                        title: options.C,
+                        name: "C"
+                    }, {
+                        title: options.D,
+                        name: "D"
+                    }]
                 } else {
-                    obj.options = [{ A: options.A }, { B: options.B }, { C: options.C }]
+                    obj.options = [{
+                        title: options.A,
+                        name: "A"
+                    }, {
+                        title: options.B,
+                        name: "B"
+                    }, {
+                        title: options.C,
+                        name: "C"
+                    }]
                 }
                 obj.correct_index = options.answer == 'A' ? 0 : options.answer == 'B' ? 1 : options.answer == 'C' ? 2 : 3
             }
@@ -165,9 +186,30 @@ class Question {
                     let obj = {}
                     obj.question = item.question
                     if (item.option_D) {
-                        obj.options = [{ A: item.option_A }, { B: item.option_B }, { C: item.option_C }, { D: item.option_D }]
+                        obj.options = [{
+                            title: item.option_A,
+                            name: "A"
+                        }, {
+                            title: item.option_B,
+                            name: "B"
+                        }, {
+                            title: item.option_C,
+                            name: "C"
+                        }, {
+                            title: item.option_D,
+                            name: "D"
+                        }]
                     } else {
-                        obj.options = [{ A: item.option_A }, { B: item.option_B }, { C: item.option_C }]
+                        obj.options = [{
+                            title: item.option_A,
+                            name: "A"
+                        }, {
+                            title: item.option_B,
+                            name: "B"
+                        }, {
+                            title: item.option_C,
+                            name: "C"
+                        }]
                     }
                     obj.correct_index = item.answer == 'A' ? 0 : item.answer == 'B' ? 1 : item.answer == 'C' ? 2 : 3
                     obj.difficulty_level = item.difficulty_level
@@ -193,12 +235,12 @@ class Question {
                     newArray.push(obj)
                 }
             }
-           await fs.unlink(path);
+            await fs.unlink(path);
             let savedata = await QuestionModel.insertMany(newArray)
             res.json({ code: 200, success: true, message: 'Save successfully', data: newArray })
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 400, success: false, message: "Internal server error",error })
+            res.json({ code: 400, success: false, message: "Internal server error", error })
         }
     }
     //////////////////////////////////////////////////////end//////////////////////////////////////////////
