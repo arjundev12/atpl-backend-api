@@ -292,7 +292,8 @@ class users {
                     "category_meta.name": 1,
                     "subcategory_meta.name": 1,
                     "chapter_meta.name": 1,
-                    "chapter": 1
+                    "chapter": 1,
+                    "correct_index": 1
                     // 'question options info chapter_meta'
                 }
             }
