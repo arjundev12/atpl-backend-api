@@ -30,6 +30,9 @@ const buySubscriptionSchema = Schema({
        type: String,
        trim: true
     },
+    plan_meta: {
+        type: { any: [Schema.Types.Mixed] }
+     },
 },{timestamps: true, versionKey: false, });
 buySubscriptionSchema.plugin(mongoosePaginate);
 const BuySubscriptionModel = mongoose.model('buysubscription', buySubscriptionSchema);

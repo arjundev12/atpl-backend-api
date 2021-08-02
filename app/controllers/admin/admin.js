@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const TransactionModal = require('../../models/transactions')
 const DocumentsModel = require('../../models/userDocument')
+const BuySubscriptionModel = require('../../models/user/buySubscription')
 
 class adminAuth {
     constructor() {
@@ -18,7 +19,10 @@ class adminAuth {
             getTransaction: this.getTransaction.bind(this),
             getKycDoc: this.getKycDoc.bind(this),
             getUserKyc:this.getUserKyc.bind(this),
-            getTotalCount: this.getTotalCount.bind(this)
+            getTotalCount: this.getTotalCount.bind(this),
+            getUserDetails: this.getUserDetails.bind(this),
+            getTotalSubscription: this.getTotalSubscription.bind(this),
+            getplansByUserId: this.getplansByUserId.bind(this),
 
         }
     }
@@ -72,6 +76,39 @@ class adminAuth {
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    async getUserDetails(req, res) {
+        try {
+            let is_subscription =await BuySubscriptionModel.findOne({user_id: req.query._id}).populate('subscription_id').lean()
+            let getUser = await UsersModel.findOne({_id: req.query._id }).lean()
+            if(is_subscription){
+                getUser.is_subscription = is_subscription
+            }else{
+                getUser.is_subscription = ""
+            }
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    async getTotalSubscription(req, res){
+        try {
+            let totalnumber = await BuySubscriptionModel.distinct("user_id") 
+            res.json({ code: 200, success: true, message: 'Buy successfully', data: totalnumber.length })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 404, success: true, message: 'Data not found' })
+        }
+    }
+    async getplansByUserId(req, res){
+        try {
+            let BuyPlans = await BuySubscriptionModel.find({user_id: req.query._id})
+            res.json({ code: 200, success: true, message: 'Buy successfully', data: BuyPlans })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 404, success: true, message: 'Data not found' })
         }
     }
     async adminAddUser(req, res) {

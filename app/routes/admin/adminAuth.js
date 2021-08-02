@@ -8,7 +8,8 @@ const admin_controller = require('../../controllers/admin/admin');
 // const user_controller = require('../../controllers/users/userAuth');
 const wallet = require('../../controllers/admin/wallet')
 const validationData= require('../../middlewares/FrontendValidator');
-const Auth = require("../../middlewares/loginToken")
+const Auth = require("../../middlewares/loginToken");
+const admin = require('../../controllers/admin/admin');
 // upload.single('profile_image')
 router.post('/login',validationData.login, admin_controller.loginAdmin)
 // router.post('/get-user',Auth.jwtVerify, admin_controller.getUser)
@@ -24,6 +25,10 @@ router.get('/get-total',Auth.jwtVerify, admin_controller.getTotalCount)
 ////////////////////////////////////////////////////////////////
 router.post('/add-user', admin_controller.adminAddUser)
 router.post('/get-user', admin_controller.getUser)
+router.get('/get-user-details', admin_controller.getUserDetails)
+router.get('/get-total-subscription', admin_controller.getTotalSubscription)
+
+router.get('/get-user-plans', admin_controller.getplansByUserId)
 
 
 

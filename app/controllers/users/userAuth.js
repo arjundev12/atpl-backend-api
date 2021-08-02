@@ -31,7 +31,7 @@ class users {
             startTest: this.startTest.bind(this),
             getPlans: this.getPlans.bind(this),
             getPlanById: this.getPlanById.bind(this),
-            buySubscription: this.buySubscription.bind(this)
+            buySubscription: this.buySubscription.bind(this),
         }
     }
     //create sign_up Api
@@ -410,31 +410,33 @@ class users {
             let getPlane = await SubscriptionModel.findOne({ _id: subscription_id }).lean()
             if (getPlane) {
                 const buy_date = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss");
-                const expire_date = moment(buy_date, "DD.MM.YYYY HH.mm.ss").add(Number(getPlane.days), 'days');
-                console.log("buy_date  expire_date", buy_date, expire_date)
-                let getBuyPlane = await BuySubscriptionModel.findOne({ subscription_id: subscription_id, user_id: user_id }).lean()
+                const expire_date = moment(buy_date,"DD.MM.YYYY HH.mm.ss").add(Number(getPlane.days), 'days')
+                // console.log("buy_date  expire_date", buy_date, expire_date)
+                // let getBuyPlane = await BuySubscriptionModel.findOne({ subscription_id: subscription_id, user_id: user_id }).lean()
                 let data = {}
-                if (getBuyPlane) {
-                    data = await BuySubscriptionModel.findOneAndUpdate({ subscription_id: subscription_id, user_id: user_id },
-                        {
-                            $set: {
-                                buy_date: buy_date,
-                                expire_date: expire_date,
-                                status: 'active',
-                                // buy_count: getBuyPlane.buy_count +1
-                            },
-                            $inc :{buy_count:1}
+                // if (getBuyPlane) {
+                //     data = await BuySubscriptionModel.findOneAndUpdate({ subscription_id: subscription_id, user_id: user_id },
+                //         {
+                //             $set: {
+                //                 buy_date: buy_date,
+                //                 expire_date: expire_date,
+                //                 status: 'active',
+                //                 // buy_count: getBuyPlane.buy_count +1
+                //             },
+                //             $inc :{buy_count:1}
                            
-                        }, {new: true}).lean()
-                } else {
-                    let saveData = new BuySubscriptionModel({
-                        user_id: user_id,
-                        subscription_id: subscription_id,
-                        buy_date: buy_date,
-                        expire_date: expire_date
-                    })
-                    data = await saveData.save();
-                }
+                //         }, {new: true}).lean()
+                // } else {
+                
+                // }
+                let saveData = new BuySubscriptionModel({
+                    user_id: user_id,
+                    subscription_id: subscription_id,
+                    buy_date: buy_date,
+                    expire_date: expire_date,
+                    plan_meta : getPlane
+                })
+                data = await saveData.save();
 
                 res.json({ code: 200, success: true, message: 'Buy successfully', data: data })
             } else {
