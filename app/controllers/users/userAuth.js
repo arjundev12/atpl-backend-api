@@ -306,12 +306,16 @@ class users {
             if (difficulty_level) {
                 query.difficulty_level = req.body.difficulty_level
             }
+            let get_chapter
             if (chapter) {
                 query.chapter = req.body.chapter
+                get_chapter = await ChapterModel.findOne({_id:req.body.chapter })
             }
             console.log("query", query)
+            
             let data = await QuestionModel.paginate(query, options)
             // console.log("news", data)
+            data.time = Number(get_chapter.time.split("m")[0]);
             res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
         } catch (error) {
             console.log("Error in catch", error)
