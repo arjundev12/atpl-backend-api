@@ -30,8 +30,4 @@ router.get('/get-total-subscription', admin_controller.getTotalSubscription)
 
 router.get('/get-user-plans', admin_controller.getplansByUserId)
 
-
-
-
 module.exports = router;
-

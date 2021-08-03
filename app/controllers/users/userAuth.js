@@ -32,6 +32,7 @@ class users {
             getPlans: this.getPlans.bind(this),
             getPlanById: this.getPlanById.bind(this),
             buySubscription: this.buySubscription.bind(this),
+            setNewPassword: this.setNewPassword.bind(this)
         }
     }
     //create sign_up Api
@@ -49,7 +50,6 @@ class users {
                 }
             }
             while (flage);
-
             return '@' + fourDigitsRandom
 
         } catch (error) {
@@ -191,6 +191,24 @@ class users {
 
             } else {
                 res.json({ code: 404, success: false, message: 'Email is not register', })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async setNewPassword(req, res) {
+        try {
+            let { user_id, password } = req.body
+            let getUser = await UsersModel.findOne({ $and: [{ user_id: user_id }, { social_type: 'manual' }, { user_type: 'user' }] }).lean()
+            if (getUser) {
+                const salt = bcrypt.genSaltSync(10);
+                const hash = bcrypt.hashSync(password, salt);
+                getUser.password = hash
+                let updatedata = await UsersModel.findOneAndUpdate({_id:getUser._id},{$set: getUser})
+                res.json({ code: 200, success: false, message: 'password is successfully Updated', })
+            } else {
+                res.json({ code: 404, success: false, message: 'Email/number is not register', })
             }
         } catch (error) {
             console.log("Error in catch", error)
@@ -362,7 +380,6 @@ class users {
                 data.end_time = end_time
                 data.attampt_question = attampt_question
                 data.online_status = 'complete'
-
                 data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
                     { $set: data }, { new: true }).lean()
                 res.json({ code: 200, success: true, message: "submit successfully ", data: data })
