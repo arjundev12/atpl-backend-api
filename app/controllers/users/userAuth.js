@@ -370,22 +370,39 @@ class users {
     ///// enum: ['online', 'complete', 'pending', ],
     async submitTest(req, res) {
         try {
-            const { user_id, chapter_id, attampt_question } = req.body
+            const { user_id, chapter_id, attampt_question, end_time, start_time } = req.body
             // let data ={}
-            const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
-            let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
-            if (data.online_status == 'complete') {
-                res.json({ code: 200, success: true, message: "Already submit successfully ", data: data })
-            } else if (data) {
-                data.end_time = end_time
-                data.attampt_question = attampt_question
-                data.online_status = 'complete'
-                data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
-                    { $set: data }, { new: true }).lean()
-                res.json({ code: 200, success: true, message: "submit successfully ", data: data })
-            } else {
-                res.json({ code: 200, success: true, message: "first need to start test ", })
+            let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            if(getData){
+                res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
+            }else{
+                let saveData = new MocktestModel({
+                    user_id: user_id,
+                    end_time :end_time,
+                    start_time: start_time,
+                    chapter: chapter_id,
+                    online_status: 'complete',
+                    attampt_question: attampt_question
+                })
+                let data1 = await saveData.save();
+                res.json({ code: 200, success: true, message: "submit successfully ", data: data1 })
             }
+           
+            // const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
+            // let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            // console.log("data",data)
+            // if (data.online_status == 'complete') {
+            //     res.json({ code: 200, success: true, message: "Already submit successfully ", data: data })
+            // } else if (data) {
+            //     data.end_time = end_time
+            //     data.attampt_question = attampt_question
+            //     data.online_status = 'complete'
+            //     data = await MocktestModel.findOneAndUpdate({ user_id: user_id, chapter: chapter_id },
+            //         { $set: data }, { new: true }).lean()
+            //     res.json({ code: 200, success: true, message: "submit successfully ", data: data })
+            // } else {
+            //     res.json({ code: 200, success: true, message: "first need to start test ", })
+            // }
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })
