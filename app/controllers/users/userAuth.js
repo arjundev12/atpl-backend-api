@@ -122,6 +122,7 @@ class users {
                     // }
                     // const salt = bcrypt.genSaltSync(10);
                     // const hash = bcrypt.hashSync(password, salt);
+                    console.log()
                     saveData = new UsersModel({
                         name: name,
                         profile_pic: profile_pic,
@@ -139,6 +140,7 @@ class users {
                         social_type: social_type,
                         device_type: device_type
                     })
+                    console.log("saveData", saveData)
                     data = await saveData.save();
                 }
             }
@@ -147,7 +149,7 @@ class users {
                     _id: data._id,
                     user_id: social_type != 'manual'? data.social_id: data.user_id
                 }
-                let data1 = await UsersModel.findOne({ user_id: data.user_id }).lean()
+                let data1 = await UsersModel.findOne({ _id: data._id }).lean()
                 console.log("dataatatat", data)
                 // let token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
                 data1.token = await jwt.sign(stoken, process.env.SUPERSECRET, { expiresIn: '7d' });
