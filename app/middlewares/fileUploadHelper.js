@@ -7,7 +7,6 @@ const { common } = require('./../utilities/constants')
 const AWS = require('aws-sdk');
 const multerS3 = require('multer-s3');
         //  return{
-console.log("hiiii",process.env.BUCKET_NAME,"regio ", process.env.REGION)
 const S3=new AWS.S3({
     bucketName: `${process.env.BUCKET_NAME}`,
     // dirName: 'hawilti-images', /* optional */
