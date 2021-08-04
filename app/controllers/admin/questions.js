@@ -20,12 +20,14 @@ class Question {
 
     async create(req, res) {
         try {
-            let { question, content, id, category_meta, subcategory_meta, chapter_meta, options, difficulty_level, info, pin, flag } = req.body
-            //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
+            let { question, content, id, category_meta, subcategory_meta, chapter_meta, options, difficulty_level, info, pin, flag, is_image } = req.body
 
             let obj = {}
             if (question) {
                 obj.question = question
+            }
+            if (is_image == false ||is_image == true ) {
+                obj.is_image = is_image
             }
             if (content) {
                 obj.content = content
@@ -83,6 +85,8 @@ class Question {
                 }
                 obj.correct_index = options.answer == 'A' ? 0 : options.answer == 'B' ? 1 : options.answer == 'C' ? 2 : 3
             }
+            // console.log("hiiii", obj )
+
             let saveData = new QuestionModel(obj)
             await saveData.save();
             res.json({ code: 200, success: true, message: 'news save successfully', })
@@ -185,6 +189,9 @@ class Question {
                 for (const item of jsonData) {
                     let obj = {}
                     obj.question = item.question
+                    if(item.is_image ==false ||item.is_image ==true){
+                        obj.is_image = item.is_image
+                    }
                     if (item.option_D) {
                         obj.options = [{
                             title: item.option_A,
@@ -236,7 +243,7 @@ class Question {
                 }
             }
             await fs.unlink(path);
-            let savedata = await QuestionModel.insertMany(newArray)
+            // let savedata = await QuestionModel.insertMany(newArray)
             res.json({ code: 200, success: true, message: 'Save successfully', data: newArray })
         } catch (error) {
             console.log("error in catch", error)

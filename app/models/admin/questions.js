@@ -28,6 +28,9 @@ var questionSchema = new Schema({
       default: "",
       trim: true
     },
+    is_image : {
+      type: Boolean
+    },
     correct_index: {
         type: Number,
         require: true 
