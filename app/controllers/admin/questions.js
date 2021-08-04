@@ -13,8 +13,8 @@ class Question {
             uploadeXlsSheet: this.uploadeXlsSheet.bind(this),
             uploadeImagebase64: this.uploadeImagebase64.bind(this),
             delete: this.delete.bind(this),
-            insertXlsSheetData: this.insertXlsSheetData.bind(this)
-            // submitReferral: this.submitReferral.bind(this)
+            insertXlsSheetData: this.insertXlsSheetData.bind(this),
+            uploadImageAWS: this.uploadImageAWS.bind(this)
         }
     }
 
@@ -164,6 +164,19 @@ class Question {
             res.json({ code: 400, success: false, message: "Internal server error", })
         }
     }
+    async uploadImageAWS(req, res) {
+        try {
+
+            if (req.file) {
+                res.json({ code: 200, success: true, message: "data listed sucessfully", data: req.file.location })
+            } else {
+                res.json({ code: 500, success: false, message: "data not listed ", data: '' });
+            }
+        } catch (error) {
+            res.json({ code: 500, success: false, message: "Data somethig went wrong", e })
+        }
+
+    }
     async uploadeXlsSheet(req, res) {
         try {
             if (req.file.path) {
@@ -243,7 +256,7 @@ class Question {
                 }
             }
             await fs.unlink(path);
-            // let savedata = await QuestionModel.insertMany(newArray)
+            let savedata = await QuestionModel.insertMany(newArray)
             res.json({ code: 200, success: true, message: 'Save successfully', data: newArray })
         } catch (error) {
             console.log("error in catch", error)

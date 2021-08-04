@@ -3,6 +3,18 @@ const fs = require('fs');
 const { common } = require('./../utilities/constants')
 // const thumb = require('node-thumbnail').thumb;
 
+
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
+        //  return{
+console.log("hiiii",process.env.BUCKET_NAME,"regio ", process.env.REGION)
+const S3=new AWS.S3({
+    bucketName: `${process.env.BUCKET_NAME}`,
+    // dirName: 'hawilti-images', /* optional */
+    region: `${process.env.REGION}`,
+    accessKeyId:  `${process.env.ACCESS_KEY_ID}`,
+    secretAccessKey: `${process.env.SRCRET_ACCESS_KEY}`,
+})
 class uploadImage{
    
         constructor(){
@@ -55,6 +67,37 @@ class uploadImage{
                 console.log("errrrrrrr",error) 
              }
            
+        }
+        awsFileUpload(){
+            const awsStorage = multerS3({
+                s3: S3,
+                acl: 'public-read',
+                bucket: `${process.env.BUCKET_NAME}/questions-images`,
+                key: function(req, file, cb) {
+                //   console.log("FIFIFIFIFFIFIFIFFIFIFIIFDATAA",req.file, "body...........",req.body, file);
+                  console.log(file, );
+                  cb(null, file.originalname+ '-' + Date.now() + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
+                }
+              });
+              
+              return multer({
+                storage: awsStorage,
+                limits: { fileSize: 1024 * 1024 * 201 },
+                fileFilter: function(req, file, cb) {
+                    console.log("@2@@#######");
+                    console.log(file, file.mimetype);
+                   
+                    if (file.mimetype == 'application/msword' || file.mimetype == 'application/pdf' ||file.mimetype == 'image/png'  || file.mimetype == 'application/svg' || file.mimetype == 'image/jpeg' ) {
+                        return cb(null, true);
+                    } else {
+                        cb(JSON.stringify({
+                            code:500,
+                            success: false,
+                            message: 'Invalid file type. Only jpg, png , gif, jpeg, svg image  and quicktime, avi, flx, mp4 video files are allowed.'
+                        }), false)
+                    }
+                }
+              });
         }
 
         //   imageresize(file, path, thumbnailimage, resizeimage){
