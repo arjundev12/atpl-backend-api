@@ -73,7 +73,7 @@ class FrontEntValidator {
                     },
                     social_type: {
                         notEmpty: true,
-                        errorMessage: { "field_name": "login_type", "error_msg": 'login_type is required' },
+                        errorMessage: { "field_name": "social_type", "error_msg": 'social_type is required' },
                     },
                 })
             const errors = await this._validationErrorsFormat(req);
