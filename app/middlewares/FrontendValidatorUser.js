@@ -67,14 +67,6 @@ class FrontEntValidator {
         }else{
             if (Object.keys(req.body).length <= 16) {
                 req.checkBody({
-                    name: {
-                        notEmpty: true,
-                        errorMessage: { "field_name": "name", "error_msg": 'name is required' },
-                    },
-                    email: {
-                        notEmpty: true,
-                        errorMessage: { "field_name": "name", "error_msg": 'email is required' },
-                    },
                     social_id: {
                         notEmpty: true,
                         errorMessage: { "field_name": "social_id", "error_msg": 'social_id is required' },

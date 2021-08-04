@@ -111,7 +111,7 @@ class users {
                     data = await saveData.save();
                 }
             } else {
-                getUser = await UsersModel.findOne({ $and: [{ user_id: user_id }, { SocialType: SocialType }, { user_type: 'user' }] })
+                getUser = await UsersModel.findOne({ $and: [{ social_id: social_id }, { social_type: social_type }, { user_type: 'user' }] })
                 if (getUser) {
                     data = getUser
                 } else {
@@ -145,7 +145,7 @@ class users {
             if (data && !_.isEmpty(data)) {
                 stoken = {
                     _id: data._id,
-                    user_id: data.user_id
+                    user_id: social_type != 'manual'? data.social_id: data.user_id
                 }
                 let data1 = await UsersModel.findOne({ user_id: data.user_id }).lean()
                 console.log("dataatatat", data)
