@@ -41,9 +41,9 @@ class Cms {
     }
     async update(req, res) {
         try {
-            let { title, content, id } = req.body
+            let { title, content, _id } = req.body
             // console.log("hiiii", title, content, id)
-            let getData = await CmsModel.findOne({ _id: id })
+            let getData = await CmsModel.findOne({ _id: _id })
             if (getData) {
                 let obj = {}
                 if (title) {
@@ -52,7 +52,7 @@ class Cms {
                 if (content) {
                     obj.content = content
                 }
-                let getData1 = await CmsModel.findOneAndUpdate({ _id: id }, { $set: obj })
+                let getData1 = await CmsModel.findOneAndUpdate({ _id: _id }, { $set: obj })
                 res.json({ code: 200, success: true, message: 'Update data successfully', getData1 })
             } else {
                 res.json({ code: 404, success: false, message: 'Id not found ', })
