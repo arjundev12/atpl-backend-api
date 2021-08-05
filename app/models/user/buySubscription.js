@@ -26,6 +26,11 @@ const buySubscriptionSchema = Schema({
        type: String,
        trim: true
     },
+    benefits: {
+        type: String,
+        trim: true,
+        default: ""
+    },
     expire_date: {
        type: String,
        trim: true

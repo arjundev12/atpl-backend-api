@@ -16,12 +16,14 @@ class Subscription {
 
     async create(req, res) {
         try {
-            let { title, price, created_by,days} = req.body
+            let { title, price, created_by,days,benefits} = req.body
             let saveData = new SubscriptionModel({
                 title: title,
                 price: Number(price),
                 days: days,
-                created_by: created_by
+                created_by: created_by,
+                benefits: benefits,
+
             })
            let data= await saveData.save();
             res.json({ code: 200, success: true, message: 'Create successfully',data: data })

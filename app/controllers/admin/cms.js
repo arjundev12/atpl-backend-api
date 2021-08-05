@@ -2,7 +2,7 @@
 
 const commenFunction = require('../common/Common')
 const UsersModel = require('../../models/user/users');
-const CmsModel = require('../../models/cms')
+const CmsModel = require('../../models/user/cms')
 const moment = require("moment");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
@@ -11,14 +11,15 @@ class Cms {
         return {
             create: this.create.bind(this),
             update: this.update.bind(this),
-            get: this.get.bind(this)
+            get: this.get.bind(this),
+            viewcms: this.viewcms.bind(this)
         }
     }
 
     async create(req, res) {
         try {
             let { title, content, type  } = req.body
-            // console.log("hiiii", title, content,)
+            console.log("hiiii", title, content,)
             let getData = await CmsModel.findOne({ title: title, type: type })
             if (getData) {
                 res.json({ code: 422, success: false, message: 'this title is all ready exist', })
@@ -27,7 +28,6 @@ class Cms {
                     title: title,
                     content: content,
                     type: type,
-                    created_by: '607e5136b24182674c4a8ed6',
                 }
                 let saveData = new CmsModel(obj)
                 await saveData.save();
@@ -83,6 +83,15 @@ class Cms {
             //     }
             // }
             let getUser = await CmsModel.paginate(query, options)
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    async viewcms(req, res) {
+        try {
+            let getUser = await CmsModel.findOne({_id: req.query._id})
             res.json({ code: 200, success: true, message: "Get list successfully ", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)

@@ -17,6 +17,11 @@ const subscriptionSchema = Schema({
         type: String,
         default: ""
     },
+    benefits: {
+        type: String,
+        trim: true,
+        default: ""
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'delete'],

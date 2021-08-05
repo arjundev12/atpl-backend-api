@@ -446,7 +446,7 @@ class users {
     }
     async buySubscription(req, res) {
         try {
-            const { user_id, subscription_id, } = req.body
+            const { user_id, subscription_id,payment_id } = req.body
             let getPlane = await SubscriptionModel.findOne({ _id: subscription_id }).lean()
             if (getPlane) {
                 const buy_date = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss");
@@ -474,7 +474,8 @@ class users {
                     subscription_id: subscription_id,
                     buy_date: buy_date,
                     expire_date: expire_date,
-                    plan_meta : getPlane
+                    plan_meta : getPlane,
+                    payment_id: payment_id ,                   
                 })
                 data = await saveData.save();
 

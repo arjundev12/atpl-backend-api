@@ -2,7 +2,7 @@
 
 const NewsModel = require('../../models/news')
 const BlogModel = require('../../models/blogs')
-const CmsModel = require('../../models/cms')
+const CmsModel = require('../../models/user/cms')
 const walletModel = require('../../models/wallet')
 const base64Img = require('base64-img')
 const sharp = require ('sharp')
