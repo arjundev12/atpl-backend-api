@@ -12,7 +12,8 @@ class Cms {
             create: this.create.bind(this),
             update: this.update.bind(this),
             get: this.get.bind(this),
-            viewcms: this.viewcms.bind(this)
+            viewcms: this.viewcms.bind(this),
+            delete: this.delete.bind(this)
         }
     }
 
@@ -52,8 +53,8 @@ class Cms {
                 if (content) {
                     obj.content = content
                 }
-                let getData1 = await CmsModel.findOneAndUpdate({ _id: _id }, { $set: obj })
-                res.json({ code: 200, success: true, message: 'Update data successfully', getData1 })
+                let getData1 = await CmsModel.findOneAndUpdate({ _id: _id }, { $set: obj }, {new: true})
+                res.json({ code: 200, success: true, message: 'Update data successfully', data:getData1 })
             } else {
                 res.json({ code: 404, success: false, message: 'Id not found ', })
 
@@ -92,6 +93,15 @@ class Cms {
     async viewcms(req, res) {
         try {
             let getUser = await CmsModel.findOne({_id: req.query._id})
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    async delete(req, res) {
+        try {
+            let getUser = await CmsModel.deleteOne({_id: req.query._id})
             res.json({ code: 200, success: true, message: "Get list successfully ", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)

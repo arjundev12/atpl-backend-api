@@ -28,5 +28,9 @@ router.post('/get-plans', user_controller.getPlans)
 router.get('/get-plan-by-id', user_controller.getPlanById)
 router.post('/buy-subscription', user_controller.buySubscription)
 
+
+router.post('/get-cms', user_controller.getcms)
+router.get('/get-cms-by-id', user_controller.getcmsById)
+
 module.exports = router;
 

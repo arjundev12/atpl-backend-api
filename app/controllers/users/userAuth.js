@@ -16,6 +16,7 @@ const constants = require('../../utilities/constants');
 const MocktestModel = require('../../models/admin/mocketest');
 const SubscriptionModel = require('../../models/admin/subscription');
 const BuySubscriptionModel = require('../../models/user/buySubscription');
+const CmsModel = require('../../models/user/cms');
 class users {
     constructor() {
         return {
@@ -32,7 +33,9 @@ class users {
             getPlans: this.getPlans.bind(this),
             getPlanById: this.getPlanById.bind(this),
             buySubscription: this.buySubscription.bind(this),
-            setNewPassword: this.setNewPassword.bind(this)
+            setNewPassword: this.setNewPassword.bind(this),
+            getcms: this.getcms.bind(this),
+            getcmsById: this.getcmsById.bind(this)
         }
     }
     //create sign_up Api
@@ -484,6 +487,37 @@ class users {
             } else {
                 res.json({ code: 404, success: true, message: 'Data not found' })
             }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    async getcms(req, res) {
+        try {
+            let options = {
+                page: req.body.page || 1,
+                limit: req.body.limit || 10,
+                sort: { createdAt: -1 },
+                lean: true,
+                // select: 'name user_type minner_Activity createdAt',
+            }
+            let query = {}
+            let getUser = await CmsModel.paginate(query, options)
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+
+    }
+    async getcmsById(req, res) {
+        try {
+            let id = req.query._id
+            //    console.log("hiiii", category_meta, subcategory_meta, chapter_meta )
+            let getdata = await CmsModel.findOne({ _id: id })
+
+            res.json({ code: 200, success: true, message: 'Update successfully', data: getdata })
+
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Internal server error", })

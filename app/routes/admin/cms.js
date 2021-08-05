@@ -13,6 +13,7 @@ router.post('/cms/create',cms.create)
 router.put('/cms/update',cms.update)
 router.post('/get-cms',cms.get)
 router.get('/view-cms',cms.viewcms)
+router.delete('/delete-cms', cms.delete)
 
 
 
