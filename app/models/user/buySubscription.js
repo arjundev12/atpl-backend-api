@@ -26,6 +26,10 @@ const buySubscriptionSchema = Schema({
        type: String,
        trim: true
     },
+    payment_id: {
+        type: String,
+        trim: true
+     },
     benefits: {
         type: String,
         trim: true,
