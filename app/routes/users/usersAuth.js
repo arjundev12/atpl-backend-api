@@ -33,6 +33,9 @@ router.post('/get-cms', user_controller.getcms)
 router.get('/get-cms-by-id', user_controller.getcmsById)
 
 router.post('/get-result', user_controller.getResult)
+router.post('/add-flag', user_controller.flageQuestion)
+
+
 
 module.exports = router;
 

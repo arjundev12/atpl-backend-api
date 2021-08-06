@@ -17,6 +17,7 @@ const MocktestModel = require('../../models/admin/mocketest');
 const SubscriptionModel = require('../../models/admin/subscription');
 const BuySubscriptionModel = require('../../models/user/buySubscription');
 const CmsModel = require('../../models/user/cms');
+const FlageModel = require('../../models/user/questionflag');
 class users {
     constructor() {
         return {
@@ -36,8 +37,8 @@ class users {
             setNewPassword: this.setNewPassword.bind(this),
             getcms: this.getcms.bind(this),
             getcmsById: this.getcmsById.bind(this),
-            getResult: this.getResult.bind(this)
-            // getcms: this.getcms.bind(this),
+            getResult: this.getResult.bind(this),
+            flageQuestion: this.flageQuestion.bind(this),
             // getcmsById: this.getcmsById.bind(this),
             // getResult: this.getResult.bind(this)
         }
@@ -565,7 +566,27 @@ class users {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
-
+    async flageQuestion(req, res) {
+        try {
+            const { user_id, question_id , status} = req.body
+            let getQuestion = await FlageModel.findOne({ user_id: user_id, question_id: question_id }).lean()
+            if (getQuestion) {
+              let update=await FlageModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, {$set: {flag:status }}, {new: true})
+                res.json({ code: 200, success: true, message: 'flag update successfully', data: update })
+            } else {
+                let saveData = new FlageModel({
+                    user_id: user_id,
+                    question_id: question_id,
+                    flag: status,
+                })
+              let  data = await saveData.save();
+                res.json({ code: 404, success: true, message: 'flag successfully' ,data: data})
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
 
     //////////////////////////////////////////////////////////////////////////////////end aipl/////////////////////////////////////////
 
