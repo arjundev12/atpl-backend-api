@@ -32,5 +32,7 @@ router.post('/buy-subscription', user_controller.buySubscription)
 router.post('/get-cms', user_controller.getcms)
 router.get('/get-cms-by-id', user_controller.getcmsById)
 
+router.post('/get-result', user_controller.getResult)
+
 module.exports = router;
 

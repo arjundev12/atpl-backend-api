@@ -35,7 +35,11 @@ class users {
             buySubscription: this.buySubscription.bind(this),
             setNewPassword: this.setNewPassword.bind(this),
             getcms: this.getcms.bind(this),
-            getcmsById: this.getcmsById.bind(this)
+            getcmsById: this.getcmsById.bind(this),
+            getResult: this.getResult.bind(this)
+            // getcms: this.getcms.bind(this),
+            // getcmsById: this.getcmsById.bind(this),
+            // getResult: this.getResult.bind(this)
         }
     }
     //create sign_up Api
@@ -377,19 +381,36 @@ class users {
     async submitTest(req, res) {
         try {
             const { user_id, chapter_id, attampt_question, end_time, start_time } = req.body
-            // let data ={}
             let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
             if(getData){
                 res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
             }else{
+                // let newArray = JSON.parse(attampt_question)
+                var mins = moment.utc(moment(end_time, "HH:mm:ss").diff(moment(start_time, "HH:mm:ss"))).format("HH:mm:ss")
+
+               let totalQuestionNo = attampt_question.length
+                let attampt_question1= await attampt_question.filter((item) =>{
+                    if (item.questionId != ""){
+                        return item
+                    }
+                } );
+                let correct_question1 = await attampt_question1.filter((item) =>item.currectOption == item.selectedOption );
+               let percentage = ((correct_question1.length/attampt_question.length) *100).toFixed(2)
+               let tag = percentage<30 ? 'fail': percentage>30 &&percentage<50 ? "poor":percentage>50 &&percentage<70 ? "good": 'excellent'
                 let saveData = new MocktestModel({
-                    user_id: user_id,
-                    end_time :end_time,
-                    start_time: start_time,
-                    chapter: chapter_id,
-                    online_status: 'complete',
-                    attampt_question: attampt_question
-                })
+                user_id: user_id,
+                end_time :end_time,
+                start_time: start_time,
+                chapter: chapter_id,
+                online_status: 'complete',
+                attampt_question: attampt_question1,
+                attampt_total_no: attampt_question1.length,
+                correct_total: correct_question1.length,
+                total_question_no: totalQuestionNo,
+                percentage: percentage+"%",
+                tag : tag,
+                online_time: mins
+            } )
                 let data1 = await saveData.save();
                 res.json({ code: 200, success: true, message: "submit successfully ", data: data1 })
             }
@@ -523,6 +544,26 @@ class users {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
+
+    async getResult(req, res) {
+        try {
+            const { user_id, chapter_id } = req.body
+            let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            getData.attampt_question = JSON.parse(getData.attampt_question)
+            // console.log( typeof JSON.parse(getData.attampt_question))
+            getData.totalCurrectAns = await getData.attampt_question.filter((item) =>{
+                if (item.questionId != ""){
+                    return item.currectOption == item.selectedOption
+                }
+            } );
+            res.json({ code: 200, success: true, message: 'Update successfully', data: getData })
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////////end aipl/////////////////////////////////////////
 

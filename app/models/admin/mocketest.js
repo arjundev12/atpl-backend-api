@@ -31,6 +31,33 @@ var mokcktestSchema = new Schema({
         enum: ['online', 'complete', 'pending', ],
         default: "online"
     },
+    correct_question: {
+        type: { any: [Schema.Types.Mixed] }
+    },
+    correct_total_no: {
+        type: String,
+        trim: true
+    },
+    attampt_total_no: {
+        type: String,
+        trim: true
+    },
+    total_question_no: {
+        type: String,
+        trim: true
+    },
+    percentage: {
+        type: String,
+        trim: true
+    },
+    tag: {
+        type: String,
+        trim: true
+    },
+    online_time: {
+        type: String,
+        trim: true
+    },
 }, { versionKey: false, timestamps: true });
 
 mokcktestSchema.plugin(mongoosePaginate);
