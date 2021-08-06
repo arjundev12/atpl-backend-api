@@ -34,7 +34,7 @@ var mokcktestSchema = new Schema({
     // correct_question: {
     //     type: { any: [Schema.Types.Mixed] }
     // },
-    correct_questions: {
+    correct_answer: {
         type: String,
         trim: true
     },

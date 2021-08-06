@@ -406,7 +406,7 @@ class users {
                 online_status: 'complete',
                 attampt_questions: attampt_question1,
                 attampt_total: attampt_question1.length,
-                correct_questions: correct_question1.length,
+                correct_answer: correct_question1.length,
                 wrong_questions : (attampt_question1.length - correct_question1.length),
                 total_questions: totalQuestionNo,
                 percentage: percentage+"%",
