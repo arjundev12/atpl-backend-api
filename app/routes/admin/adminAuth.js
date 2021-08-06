@@ -29,5 +29,9 @@ router.get('/get-user-details', admin_controller.getUserDetails)
 router.get('/get-total-subscription', admin_controller.getTotalSubscription)
 
 router.get('/get-user-plans', admin_controller.getplansByUserId)
+router.get('/get-mocktest', admin_controller.getMocktestByUserId)
+router.get('/get-mocktest-by-id', admin_controller.getMocktestById)
+
+
 
 module.exports = router;

@@ -7,7 +7,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const TransactionModal = require('../../models/transactions')
 const DocumentsModel = require('../../models/userDocument')
-const BuySubscriptionModel = require('../../models/user/buySubscription')
+const BuySubscriptionModel = require('../../models/user/buySubscription');
+const MocktestModel = require('../../models/admin/mocketest');
 
 class adminAuth {
     constructor() {
@@ -23,6 +24,11 @@ class adminAuth {
             getUserDetails: this.getUserDetails.bind(this),
             getTotalSubscription: this.getTotalSubscription.bind(this),
             getplansByUserId: this.getplansByUserId.bind(this),
+            getMocktestByUserId: this.getMocktestByUserId.bind(this),
+            getMocktestById: this.getMocktestById.bind(this),
+            // getTotalSubscription: this.getTotalSubscription.bind(this),
+            // getplansByUserId: this.getplansByUserId.bind(this),
+            // getMocktestByUserId: this.getMocktestByUserId.bind(this),
 
         }
     }
@@ -106,6 +112,24 @@ class adminAuth {
         try {
             let BuyPlans = await BuySubscriptionModel.find({user_id: req.query._id})
             res.json({ code: 200, success: true, message: 'Buy successfully', data: BuyPlans })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 404, success: true, message: 'Data not found' })
+        }
+    }
+    async getMocktestByUserId(req, res){
+        try {
+            let getMocktest = await MocktestModel.find({user_id: req.query._id},{attampt_questions:0}).populate('chapter','name')
+            res.json({ code: 200, success: true, message: 'Buy successfully', data: getMocktest })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 404, success: true, message: 'Data not found' })
+        }
+    }
+    async getMocktestById(req, res){
+        try {
+            let getMocktest = await MocktestModel.findOne({_id: req.query._id},{attampt_questions:0}).populate('chapter','name subcategory_meta')
+            res.json({ code: 200, success: true, message: 'Buy successfully', data: getMocktest })
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 404, success: true, message: 'Data not found' })
