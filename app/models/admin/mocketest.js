@@ -23,7 +23,7 @@ var mokcktestSchema = new Schema({
     chapter_meta: {
         type: { any: [Schema.Types.Mixed] }
     },
-    attampt_question: {
+    attampt_questions: {
         type: { any: [Schema.Types.Mixed] }
     },
     online_status: {
@@ -31,18 +31,22 @@ var mokcktestSchema = new Schema({
         enum: ['online', 'complete', 'pending', ],
         default: "online"
     },
-    correct_question: {
-        type: { any: [Schema.Types.Mixed] }
-    },
-    correct_total_no: {
+    // correct_question: {
+    //     type: { any: [Schema.Types.Mixed] }
+    // },
+    correct_questions: {
         type: String,
         trim: true
     },
-    attampt_total_no: {
+    wrong_questions: {
         type: String,
         trim: true
     },
-    total_question_no: {
+    attampt_total: {
+        type: String,
+        trim: true
+    },
+    total_questions: {
         type: String,
         trim: true
     },

@@ -395,6 +395,7 @@ class users {
                     }
                 } );
                 let correct_question1 = await attampt_question1.filter((item) =>item.currectOption == item.selectedOption );
+
                let percentage = ((correct_question1.length/attampt_question.length) *100).toFixed(2)
                let tag = percentage<30 ? 'fail': percentage>30 &&percentage<50 ? "poor":percentage>50 &&percentage<70 ? "good": 'excellent'
                 let saveData = new MocktestModel({
@@ -403,10 +404,11 @@ class users {
                 start_time: start_time,
                 chapter: chapter_id,
                 online_status: 'complete',
-                attampt_question: attampt_question1,
-                attampt_total_no: attampt_question1.length,
-                correct_total: correct_question1.length,
-                total_question_no: totalQuestionNo,
+                attampt_questions: attampt_question1,
+                attampt_total: attampt_question1.length,
+                correct_questions: correct_question1.length,
+                wrong_questions : (attampt_question1.length - correct_question1.length),
+                total_questions: totalQuestionNo,
                 percentage: percentage+"%",
                 tag : tag,
                 online_time: mins
