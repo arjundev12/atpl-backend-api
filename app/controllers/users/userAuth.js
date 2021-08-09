@@ -634,7 +634,9 @@ class users {
     // [category ,subcategory, pin, flag, question, chapters]
     async SearchApi(req, res) {
         try {
-            const { user_id, search_types, search_data } = req.body
+            const { user_id, search_data, } = req.body
+           let search_types = req.body.search_types || ['category' ,'subcategory', 'pin', 'flag', 'question', 'chapter']
+            
             let data = {};
             let categoryData;
             let subcategoryData;
