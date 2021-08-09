@@ -26,7 +26,7 @@ class uploadImage{
          uploadFileMethod(folderName){
              try {
                 this.folderName=folderName;
-                console.log(global.globalPath,"............",folderName)
+                // console.log(global.globalPath,"............",folderName)
                let parant_path = 'public'
                let child_path= `${parant_path}/${folderName}`;
                 if(!fs.existsSync(parant_path)){

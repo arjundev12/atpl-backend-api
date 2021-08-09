@@ -595,7 +595,7 @@ class users {
             let getQuestion = await PinQuestionModel.findOne({ user_id: user_id, question_id: question_id }).lean()
             if (getQuestion) {
               let update=await PinQuestionModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, {$set: {pin_status:status }}, {new: true})
-                res.json({ code: 200, success: true, message: 'flag update successfully', data: update })
+                res.json({ code: 200, success: true, message: 'pin update successfully', data: update })
             } else {
                 let saveData = new PinQuestionModel({
                     user_id: user_id,
@@ -603,7 +603,7 @@ class users {
                     pin_status: status,
                 })
               let  data = await saveData.save();
-                res.json({ code: 404, success: true, message: 'flag successfully' ,data: data})
+                res.json({ code: 404, success: true, message: 'pin successfully' ,data: data})
             }
         } catch (error) {
             console.log("Error in catch", error)
