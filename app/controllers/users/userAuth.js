@@ -388,10 +388,11 @@ class users {
     async submitTest(req, res) {
         try {
             const { user_id, chapter_id, attampt_question, end_time, start_time } = req.body
-            let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
-            if (getData) {
-                res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
-            } else {
+            // let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            // if (getData) {
+            //     res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
+            // } else {
+                // let getData = await MocktestModel.deleteOne({ user_id: user_id, chapter: chapter_id }).lean()
                 // let newArray = JSON.parse(attampt_question)
                 var mins = moment.utc(moment(end_time, "HH:mm:ss").diff(moment(start_time, "HH:mm:ss"))).format("HH:mm:ss")
 
@@ -422,7 +423,7 @@ class users {
                 })
                 let data1 = await saveData.save();
                 res.json({ code: 200, success: true, message: "submit successfully ", data: data1 })
-            }
+            // }
 
             // const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
             // let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
