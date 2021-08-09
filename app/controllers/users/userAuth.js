@@ -18,6 +18,7 @@ const SubscriptionModel = require('../../models/admin/subscription');
 const BuySubscriptionModel = require('../../models/user/buySubscription');
 const CmsModel = require('../../models/user/cms');
 const FlageModel = require('../../models/user/questionflag');
+const PinQuestionModel = require('../../models/user/pinquestion');
 class users {
     constructor() {
         return {
@@ -39,7 +40,7 @@ class users {
             getcmsById: this.getcmsById.bind(this),
             getResult: this.getResult.bind(this),
             flageQuestion: this.flageQuestion.bind(this),
-            // getcmsById: this.getcmsById.bind(this),
+            pinQuestions: this.pinQuestions.bind(this),
             // getResult: this.getResult.bind(this)
         }
     }
@@ -578,6 +579,28 @@ class users {
                     user_id: user_id,
                     question_id: question_id,
                     flag: status,
+                })
+              let  data = await saveData.save();
+                res.json({ code: 404, success: true, message: 'flag successfully' ,data: data})
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+
+    async pinQuestions(req, res) {
+        try {
+            const { user_id, question_id , status} = req.body
+            let getQuestion = await PinQuestionModel.findOne({ user_id: user_id, question_id: question_id }).lean()
+            if (getQuestion) {
+              let update=await PinQuestionModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, {$set: {pin_status:status }}, {new: true})
+                res.json({ code: 200, success: true, message: 'flag update successfully', data: update })
+            } else {
+                let saveData = new PinQuestionModel({
+                    user_id: user_id,
+                    question_id: question_id,
+                    pin_status: status,
                 })
               let  data = await saveData.save();
                 res.json({ code: 404, success: true, message: 'flag successfully' ,data: data})
