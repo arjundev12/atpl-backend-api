@@ -4,6 +4,7 @@ const moment = require("moment");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const _ = require('underscore');
+const mongoose = require('mongoose')
 const CategoryModel = require('../../models/admin/categories')
 // const moment = require("moment");
 // const bcrypt = require('bcryptjs');
@@ -41,7 +42,11 @@ class users {
             getResult: this.getResult.bind(this),
             flageQuestion: this.flageQuestion.bind(this),
             pinQuestions: this.pinQuestions.bind(this),
-            // getResult: this.getResult.bind(this)
+            SearchApi: this.SearchApi.bind(this),
+            //     getResult: this.getResult.bind(this),
+            //     flageQuestion: this.flageQuestion.bind(this),
+            //     pinQuestions: this.pinQuestions.bind(this),
+            //     SearchApi: this.SearchApi.bind(this)
         }
     }
     //create sign_up Api
@@ -156,7 +161,7 @@ class users {
             if (data && !_.isEmpty(data)) {
                 stoken = {
                     _id: data._id,
-                    user_id: social_type != 'manual'? data.social_id: data.user_id
+                    user_id: social_type != 'manual' ? data.social_id : data.user_id
                 }
                 let data1 = await UsersModel.findOne({ _id: data._id }).lean()
                 console.log("dataatatat", data)
@@ -216,7 +221,7 @@ class users {
                 const salt = bcrypt.genSaltSync(10);
                 const hash = bcrypt.hashSync(password, salt);
                 getUser.password = hash
-                let updatedata = await UsersModel.findOneAndUpdate({_id:getUser._id},{$set: getUser})
+                let updatedata = await UsersModel.findOneAndUpdate({ _id: getUser._id }, { $set: getUser })
                 res.json({ code: 200, success: false, message: 'password is successfully Updated', })
             } else {
                 res.json({ code: 404, success: false, message: 'Email/number is not register', })
@@ -339,10 +344,10 @@ class users {
             let get_chapter
             if (chapter) {
                 query.chapter = req.body.chapter
-                get_chapter = await ChapterModel.findOne({_id:req.body.chapter })
+                get_chapter = await ChapterModel.findOne({ _id: req.body.chapter })
             }
             console.log("query", query)
-            
+
             let data = await QuestionModel.paginate(query, options)
             // console.log("news", data)
             data.time = Number(get_chapter.time.split("m")[0]);
@@ -384,41 +389,41 @@ class users {
         try {
             const { user_id, chapter_id, attampt_question, end_time, start_time } = req.body
             let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
-            if(getData){
+            if (getData) {
                 res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
-            }else{
+            } else {
                 // let newArray = JSON.parse(attampt_question)
                 var mins = moment.utc(moment(end_time, "HH:mm:ss").diff(moment(start_time, "HH:mm:ss"))).format("HH:mm:ss")
 
-               let totalQuestionNo = attampt_question.length
-                let attampt_question1= await attampt_question.filter((item) =>{
-                    if (item.questionId != ""){
+                let totalQuestionNo = attampt_question.length
+                let attampt_question1 = await attampt_question.filter((item) => {
+                    if (item.questionId != "") {
                         return item
                     }
-                } );
-                let correct_question1 = await attampt_question1.filter((item) =>item.currectOption == item.selectedOption );
+                });
+                let correct_question1 = await attampt_question1.filter((item) => item.currectOption == item.selectedOption);
 
-               let percentage = ((correct_question1.length/attampt_question.length) *100).toFixed(2)
-               let tag = percentage<30 ? 'fail': percentage>30 &&percentage<50 ? "poor":percentage>50 &&percentage<70 ? "good": 'excellent'
+                let percentage = ((correct_question1.length / attampt_question.length) * 100).toFixed(2)
+                let tag = percentage < 30 ? 'fail' : percentage > 30 && percentage < 50 ? "poor" : percentage > 50 && percentage < 70 ? "good" : 'excellent'
                 let saveData = new MocktestModel({
-                user_id: user_id,
-                end_time :end_time,
-                start_time: start_time,
-                chapter: chapter_id,
-                online_status: 'complete',
-                attampt_questions: attampt_question1,
-                attampt_total: attampt_question1.length,
-                correct_answer: correct_question1.length,
-                wrong_questions : (attampt_question1.length - correct_question1.length),
-                total_questions: totalQuestionNo,
-                percentage: percentage+"%",
-                tag : tag,
-                online_time: mins
-            } )
+                    user_id: user_id,
+                    end_time: end_time,
+                    start_time: start_time,
+                    chapter: chapter_id,
+                    online_status: 'complete',
+                    attampt_questions: attampt_question1,
+                    attampt_total: attampt_question1.length,
+                    correct_answer: correct_question1.length,
+                    wrong_questions: (attampt_question1.length - correct_question1.length),
+                    total_questions: totalQuestionNo,
+                    percentage: percentage + "%",
+                    tag: tag,
+                    online_time: mins
+                })
                 let data1 = await saveData.save();
                 res.json({ code: 200, success: true, message: "submit successfully ", data: data1 })
             }
-           
+
             // const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
             // let data = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
             // console.log("data",data)
@@ -475,11 +480,11 @@ class users {
     }
     async buySubscription(req, res) {
         try {
-            const { user_id, subscription_id,payment_id } = req.body
+            const { user_id, subscription_id, payment_id } = req.body
             let getPlane = await SubscriptionModel.findOne({ _id: subscription_id }).lean()
             if (getPlane) {
                 const buy_date = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss");
-                const expire_date = moment(buy_date,"DD.MM.YYYY HH.mm.ss").add(Number(getPlane.days), 'days')
+                const expire_date = moment(buy_date, "DD.MM.YYYY HH.mm.ss").add(Number(getPlane.days), 'days')
                 // console.log("buy_date  expire_date", buy_date, expire_date)
                 // let getBuyPlane = await BuySubscriptionModel.findOne({ subscription_id: subscription_id, user_id: user_id }).lean()
                 let data = {}
@@ -493,18 +498,18 @@ class users {
                 //                 // buy_count: getBuyPlane.buy_count +1
                 //             },
                 //             $inc :{buy_count:1}
-                           
+
                 //         }, {new: true}).lean()
                 // } else {
-                
+
                 // }
                 let saveData = new BuySubscriptionModel({
                     user_id: user_id,
                     subscription_id: subscription_id,
                     buy_date: buy_date,
                     expire_date: expire_date,
-                    plan_meta : getPlane,
-                    payment_id: payment_id ,                   
+                    plan_meta: getPlane,
+                    payment_id: payment_id,
                 })
                 data = await saveData.save();
 
@@ -555,11 +560,11 @@ class users {
             let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
             getData.attampt_question = JSON.parse(getData.attampt_question)
             // console.log( typeof JSON.parse(getData.attampt_question))
-            getData.totalCurrectAns = await getData.attampt_question.filter((item) =>{
-                if (item.questionId != ""){
+            getData.totalCurrectAns = await getData.attampt_question.filter((item) => {
+                if (item.questionId != "") {
                     return item.currectOption == item.selectedOption
                 }
-            } );
+            });
             res.json({ code: 200, success: true, message: 'Update successfully', data: getData })
 
         } catch (error) {
@@ -569,19 +574,26 @@ class users {
     }
     async flageQuestion(req, res) {
         try {
-            const { user_id, question_id , status} = req.body
+            const { user_id, question_id, status } = req.body
             let getQuestion = await FlageModel.findOne({ user_id: user_id, question_id: question_id }).lean()
             if (getQuestion) {
-              let update=await FlageModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, {$set: {flag:status }}, {new: true})
-                res.json({ code: 200, success: true, message: 'flag update successfully', data: update })
+                let update
+                if (status == '0') {
+                    update = await FlageModel.deleteOne({ user_id: user_id, question_id: question_id })
+                } else {
+                    update = await FlageModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, { $set: { flag: status } }, { new: true })
+                }
+                res.json({ code: 200, success: true, message: 'flag update successfully', data: ""  })
             } else {
+                let getQuestion1 = await QuestionModel.findOne({ _id: question_id }).lean()
                 let saveData = new FlageModel({
                     user_id: user_id,
                     question_id: question_id,
                     flag: status,
+                    meta_data: getQuestion1
                 })
-              let  data = await saveData.save();
-                res.json({ code: 404, success: true, message: 'flag successfully' ,data: data})
+                let data = await saveData.save();
+                res.json({ code: 404, success: true, message: 'flag successfully', data: "" })
             }
         } catch (error) {
             console.log("Error in catch", error)
@@ -591,23 +603,172 @@ class users {
 
     async pinQuestions(req, res) {
         try {
-            const { user_id, question_id , status} = req.body
+            const { user_id, question_id, status } = req.body
             let getQuestion = await PinQuestionModel.findOne({ user_id: user_id, question_id: question_id }).lean()
             if (getQuestion) {
-              let update=await PinQuestionModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, {$set: {pin_status:status }}, {new: true})
-                res.json({ code: 200, success: true, message: 'pin update successfully', data: update })
+                let update
+                if (status == '0') {
+                    update = await PinQuestionModel.deleteOne({ user_id: user_id, question_id: question_id })
+                } else {
+                    update = await PinQuestionModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, { $set: { pin_status: status } }, { new: true }).lean()
+                }
+
+                res.json({ code: 200, success: true, message: 'pin update successfully', data: ""  })
             } else {
+                let getQuestion1 = await QuestionModel.findOne({ _id: question_id }).lean()
                 let saveData = new PinQuestionModel({
                     user_id: user_id,
                     question_id: question_id,
                     pin_status: status,
+                    meta_data: getQuestion1
                 })
-              let  data = await saveData.save();
-                res.json({ code: 404, success: true, message: 'pin successfully' ,data: data})
+                let data = await saveData.save();
+
+                res.json({ code: 404, success: true, message: 'pin successfully', data: "" })
             }
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+    // [category ,subcategory, pin, flag, question, chapters]
+    async SearchApi(req, res) {
+        try {
+            const { user_id, search_types, search_data } = req.body
+            let data = {};
+            let categoryData;
+            let subcategoryData;
+            let pinData;
+            let flageData;
+            let QuestionData;
+            let chapterData;
+            if (search_types.length > 0) {
+                for (let iterator of search_types) {
+                    if (iterator == 'category') {
+                        categoryData = await this._categorySearch(search_data)
+                        data.categories = categoryData
+                    }
+                    if (iterator == 'subcategory') {
+                        subcategoryData = await this._subcategorySearch(search_data)
+                        data.subcategories = subcategoryData
+                    }
+                    if (iterator == 'pin') {
+                        pinData = await this._pinSearch(user_id, search_data)
+                        data.pin_questions = pinData
+                    }
+                    if (iterator == 'flag') {
+                        flageData = await this._flageSearch(user_id, search_data)
+                        data.flag_question = flageData
+                    }
+                    if (iterator == 'question') {
+                        QuestionData = await this._questionSearch(search_data)
+                        data.questions = QuestionData
+                    }
+                    if (iterator == 'chapter') {
+                        chapterData = await this._chapterSearch(search_data)
+                        data.chapters = chapterData
+                    }
+                }
+            }
+
+
+
+            res.json({ code: 200, success: true, message: 'get successfully', data: data })
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", })
+        }
+    }
+
+    async _categorySearch(data) {
+        let searchData = data
+        try {
+            let SearchResult = await CategoryModel.aggregate([{ $match: { $or: [{ name: { $regex: searchData, $options: "i" } }, { content: { $regex: searchData, $options: "i" } }] } }])
+            // let newArray = [];
+            // for (let element of articleSearchResult) {
+            //     let newObj = {}
+            //     newObj.image = "http://52.14.78.31:5000/company_project/thumbnailimage/image-1591176387819.jpg"
+            //     if (element.header_media.type == "image") {
+            //         if (Array.isArray(element.header_media)) {
+            //             newObj.image = element.header_media[0].url
+            //         } else {
+            //             newObj.image = element.header_media.url
+            //         }
+
+            //     }
+            //     newObj._id = element._id
+            //     newObj.title = element.title
+            //     newObj.type = element.type
+
+            //     newArray.push(newObj)
+
+            // }
+            return SearchResult;
+        } catch (err) {
+            console.log("err", err)
+            throw err
+        }
+    }
+    async _questionSearch(data) {
+        let searchData = data
+        try {
+            let SearchResult = await QuestionModel.aggregate([{ $match: { $or: [{ question: { $regex: searchData, $options: "i" } }] } }, { $project: { question: 1 } }])
+            return SearchResult;
+        } catch (err) {
+            console.log("err", err)
+            throw err
+        }
+    }
+    async _chapterSearch(data) {
+        let searchData = data
+        try {
+            let SearchResult = await ChapterModel.aggregate([{ $match: { $or: [{ name: { $regex: searchData, $options: "i" } }] } }, { $project: { name: 1, is_mocktest: 1, questions: 1, time: 1, marks: 1 } }])
+            return SearchResult;
+        } catch (err) {
+            console.log("err", err)
+            throw err
+        }
+    }
+    async _subcategorySearch(data) {
+        let searchData = data
+        try {
+            let SearchResult = await SubCategoryModel.aggregate([{ $match: { $or: [{ name: { $regex: searchData, $options: "i" } }] } }, { $project: { name: 1, status: 1, "category_meta.name": 1 } }])
+            return SearchResult;
+        } catch (err) {
+            console.log("err", err)
+            throw err
+        }
+    }
+    async _flageSearch(user_id, data) {
+        let searchData = data
+        let id = mongoose.Types.ObjectId(user_id);
+        try {
+            let SearchResult = await FlageModel.aggregate([{
+                $match: {
+                    $and: [{user_id: id},{'meta_data.question': { $regex: searchData, $options: "i" } }]
+                }
+            }, { $project: {user_id:1, flag: 1, "meta_data.question": 1 } }])
+            return SearchResult;
+        } catch (err) {
+            console.log("err", err)
+            throw err
+        }
+    }
+
+    async _pinSearch(user_id, data) {
+        let searchData = data
+        let id = mongoose.Types.ObjectId(user_id);
+        try {
+            let SearchResult = await PinQuestionModel.aggregate([{
+                $match: {
+                    $and: [{user_id: id},{'meta_data.question': { $regex: searchData, $options: "i" } }]
+                }
+            }, { $project: {user_id:1, pin_status: 1, "meta_data.question": 1 } }])
+             return SearchResult;
+        } catch (err) {
+            console.log("err", err)
+            throw err
         }
     }
 

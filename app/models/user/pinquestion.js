@@ -14,8 +14,10 @@ var pinQuestionSchema = new Schema({
         type: String,
         enum : ["0", "1"],
         default: "0"
+    },
+    meta_data: {
+        type: { any: [Schema.Types.Mixed] }
     }
-    
    }, { versionKey: false, timestamps:true });
 
 pinQuestionSchema.plugin(mongoosePaginate);
