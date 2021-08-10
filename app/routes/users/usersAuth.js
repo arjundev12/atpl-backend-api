@@ -31,6 +31,7 @@ router.post('/buy-subscription', user_controller.buySubscription)
 
 router.post('/get-cms', user_controller.getcms)
 router.get('/get-cms-by-id', user_controller.getcmsById)
+router.get('/get-keyword', user_controller.getKeyword)
 
 router.post('/get-result', user_controller.getResult)
 router.post('/add-flag', user_controller.flageQuestion)

@@ -46,7 +46,8 @@ class users {
             getCorrectAnswer: this.getCorrectAnswer.bind(this),
             getIncorrectAnswer: this.getIncorrectAnswer.bind(this),
             getflageQuestion: this.getflageQuestion.bind(this),
-            getUnAnswered: this.getUnAnswered.bind(this)
+            getUnAnswered: this.getUnAnswered.bind(this),
+            getKeyword: this.getKeyword.bind(this)
         }
     }
     //create sign_up Api
@@ -517,6 +518,15 @@ class users {
             let getdata = await FlageModel.find({ 'user_id': user_id, 'meta_data.chapter': mongoose.Types.ObjectId(chapter_id) }, { meta_data: 0 }).populate('question_id', 'question options difficulty_level')
             // delete getdata['meta_data'] 
             res.json({ code: 200, success: true, message: "Get list successfully ", data: getdata })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async getKeyword(req, res) {
+        try {
+           
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: ['category' ,'subcategory', 'pin', 'flag', 'question', 'chapters'] })
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })
