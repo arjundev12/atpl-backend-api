@@ -43,9 +43,9 @@ class users {
             flageQuestion: this.flageQuestion.bind(this),
             pinQuestions: this.pinQuestions.bind(this),
             SearchApi: this.SearchApi.bind(this),
-            //     getResult: this.getResult.bind(this),
-            //     flageQuestion: this.flageQuestion.bind(this),
-            //     pinQuestions: this.pinQuestions.bind(this),
+            getCorrectAnswer: this.getCorrectAnswer.bind(this),
+            getIncorrectAnswer: this.getIncorrectAnswer.bind(this),
+                getflageQuestion: this.getflageQuestion.bind(this),
             //     SearchApi: this.SearchApi.bind(this)
         }
     }
@@ -393,40 +393,39 @@ class users {
             //     res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
 
             // } else {
-                // let newArray = JSON.parse(attampt_question)
-                await MocktestModel.deleteOne({ user_id: user_id, chapter: chapter_id }).lean()
+            // let newArray = JSON.parse(attampt_question)
+            await MocktestModel.deleteOne({ user_id: user_id, chapter: chapter_id }).lean()
 
-                var mins = moment.utc(moment(end_time, "HH:mm:ss").diff(moment(start_time, "HH:mm:ss"))).format("HH:mm:ss")
+            var mins = moment.utc(moment(end_time, "HH:mm:ss").diff(moment(start_time, "HH:mm:ss"))).format("HH:mm:ss")
 
-                let totalQuestionNo = attampt_question.length
-                let attampt_question1 = await attampt_question.filter((item) => {
-                    if (item.questionId != "") {
-                        return item
-                    }
-                });
-                let correct_question1 = await attampt_question1.filter((item) => item.currectOption == item.selectedOption);
-                let wrong_question1 = await attampt_question1.filter((item) => item.currectOption != item.selectedOption);
-                let percentage = ((correct_question1.length / attampt_question.length) * 100).toFixed(2)
-                let tag = percentage < 30 ? 'fail' : percentage > 30 && percentage < 50 ? "poor" : percentage > 50 && percentage < 70 ? "good" : 'excellent'
-                let saveData = new MocktestModel({
-                    user_id: user_id,
-                    end_time: end_time,
-                    start_time: start_time,
-                    chapter: chapter_id,
-                    online_status: 'complete',
-                    attampt_questions: attampt_question1,
-                    attampt_total: attampt_question1.length,
-                    correct_answer: correct_question1.length,
-                    wrong_questions_meta: wrong_question1,
-                    correct_answer_meta: correct_question1,
-                    wrong_questions: (attampt_question1.length - correct_question1.length),
-                    total_questions: totalQuestionNo,
-                    percentage: percentage + "%",
-                    tag: tag,
-                    online_time: mins
-                })
-                let data1 = await saveData.save();
-                res.json({ code: 200, success: true, message: "submit successfully ", data: data1 })
+            let totalQuestionNo = attampt_question.length
+            let attampt_question1 = await attampt_question.filter((item) => {
+                if (item.questionId != "") {
+                    return item
+                }
+            });
+            let correct_question1 = await attampt_question1.filter((item) => item.currectOption == item.selectedOption);
+            let percentage = ((correct_question1.length / attampt_question.length) * 100).toFixed(2)
+            let tag = percentage < 30 ? 'fail' : percentage > 30 && percentage < 50 ? "poor" : percentage > 50 && percentage < 70 ? "good" : 'excellent'
+            let saveData = new MocktestModel({
+                user_id: user_id,
+                end_time: end_time,
+                start_time: start_time,
+                chapter: chapter_id,
+                online_status: 'complete',
+                attampt_questions: attampt_question1,
+                attampt_total: attampt_question1.length,
+                correct_answer: correct_question1.length,
+                wrong_questions: (attampt_question1.length - correct_question1.length),
+                total_questions: totalQuestionNo,
+                percentage: percentage + "%",
+                tag: tag,
+                online_time: mins
+            })
+            let data1 = await saveData.save();
+            delete data1.wrong_questions_meta
+            delete data1.correct_answer_meta
+            res.json({ code: 200, success: true, message: "submit successfully ", data: data1 })
             // }
 
             // const end_time = moment().utcOffset("+05:30").format("DD.MM.YYYY HH.mm.ss")
@@ -449,7 +448,62 @@ class users {
             res.status(500).json({ success: false, message: "Somthing went wrong", })
         }
     }
+    async _getQuestion(id) {
+        try {
+            let data = await QuestionModel.findOne({ _id: id }, { question: 1, options: 1, difficulty_level: 1 }).lean()
+            return data
+        } catch (error) {
+            throw error
+        }
+    }
+    async getCorrectAnswer(req, res) {
+        try {
+            const { user_id, chapter_id } = req.body
+            let correctAnsArray = [];
+            let getdata = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            if (getdata) {
+                let correct_question1 = await getdata.attampt_questions.filter((item) => item.currectOption == item.selectedOption);
+                for (let item of correct_question1) {
+                    let questiondata = await this._getQuestion(item.questionId)
+                    correctAnsArray.push(questiondata)
+                }
+            }
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: correctAnsArray })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async getIncorrectAnswer(req, res) {
+        try {
+            const { user_id, chapter_id } = req.body
+            let IncorrectAnsArray = [];
+            let getdata = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            if (getdata) {
+                let Incorrect_question1 = await getdata.attampt_questions.filter((item) => item.currectOption != item.selectedOption);
+                for (let item of Incorrect_question1) {
+                    let questiondata = await this._getQuestion(item.questionId)
+                    IncorrectAnsArray.push(questiondata)
+                }
+            }
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: IncorrectAnsArray })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
 
+    async getflageQuestion(req, res) {
+        try {
+            const { user_id, chapter_id } = req.body
+            let getdata = await FlageModel.find({ 'user_id': user_id,'meta_data.chapter': mongoose.Types.ObjectId(chapter_id) },{meta_data:0}).populate('question_id','question options difficulty_level')
+            // delete getdata['meta_data'] 
+            res.json({ code: 200, success: true, message: "Get list successfully ", data: getdata })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
     async getPlans(req, res) {
         try {
             let options = {
@@ -588,7 +642,7 @@ class users {
                 } else {
                     update = await FlageModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, { $set: { flag: status } }, { new: true })
                 }
-                res.json({ code: 200, success: true, message: 'flag update successfully', data: ""  })
+                res.json({ code: 200, success: true, message: 'flag update successfully', data: "" })
             } else {
                 let getQuestion1 = await QuestionModel.findOne({ _id: question_id }).lean()
                 let saveData = new FlageModel({
@@ -618,7 +672,7 @@ class users {
                     update = await PinQuestionModel.findOneAndUpdate({ user_id: user_id, question_id: question_id }, { $set: { pin_status: status } }, { new: true }).lean()
                 }
 
-                res.json({ code: 200, success: true, message: 'pin update successfully', data: ""  })
+                res.json({ code: 200, success: true, message: 'pin update successfully', data: "" })
             } else {
                 let getQuestion1 = await QuestionModel.findOne({ _id: question_id }).lean()
                 let saveData = new PinQuestionModel({
@@ -640,8 +694,8 @@ class users {
     async SearchApi(req, res) {
         try {
             const { user_id, search_data, } = req.body
-           let search_types = req.body.search_types || ['category' ,'subcategory', 'pin', 'flag', 'question', 'chapter']
-            
+            let search_types = req.body.search_types || ['category', 'subcategory', 'pin', 'flag', 'question', 'chapter']
+
             let data = {};
             let categoryData;
             let subcategoryData;
@@ -753,9 +807,9 @@ class users {
         try {
             let SearchResult = await FlageModel.aggregate([{
                 $match: {
-                    $and: [{user_id: id},{'meta_data.question': { $regex: searchData, $options: "i" } }]
+                    $and: [{ user_id: id }, { 'meta_data.question': { $regex: searchData, $options: "i" } }]
                 }
-            }, { $project: {user_id:1, flag: 1, "meta_data.question": 1 } }])
+            }, { $project: { user_id: 1, flag: 1, "meta_data.question": 1 } }])
             return SearchResult;
         } catch (err) {
             console.log("err", err)
@@ -769,10 +823,10 @@ class users {
         try {
             let SearchResult = await PinQuestionModel.aggregate([{
                 $match: {
-                    $and: [{user_id: id},{'meta_data.question': { $regex: searchData, $options: "i" } }]
+                    $and: [{ user_id: id }, { 'meta_data.question': { $regex: searchData, $options: "i" } }]
                 }
-            }, { $project: {user_id:1, pin_status: 1, "meta_data.question": 1 } }])
-             return SearchResult;
+            }, { $project: { user_id: 1, pin_status: 1, "meta_data.question": 1 } }])
+            return SearchResult;
         } catch (err) {
             console.log("err", err)
             throw err

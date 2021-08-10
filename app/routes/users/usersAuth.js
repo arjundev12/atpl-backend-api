@@ -37,6 +37,12 @@ router.post('/add-flag', user_controller.flageQuestion)
 router.post('/add-pin', user_controller.pinQuestions)
 router.post('/search-data', user_controller.SearchApi)
 
+router.post('/get-correct-question', user_controller.getCorrectAnswer)
+router.post('/get-incorrect-question', user_controller.getIncorrectAnswer)
+router.post('/get-flag-question', user_controller.getflageQuestion)
+
+
+
 
 
 
