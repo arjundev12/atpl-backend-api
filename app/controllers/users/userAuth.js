@@ -45,8 +45,8 @@ class users {
             SearchApi: this.SearchApi.bind(this),
             getCorrectAnswer: this.getCorrectAnswer.bind(this),
             getIncorrectAnswer: this.getIncorrectAnswer.bind(this),
-                getflageQuestion: this.getflageQuestion.bind(this),
-            //     SearchApi: this.SearchApi.bind(this)
+            getflageQuestion: this.getflageQuestion.bind(this),
+            getUnAnswered: this.getUnAnswered.bind(this)
         }
     }
     //create sign_up Api
@@ -492,11 +492,29 @@ class users {
             res.status(500).json({ success: false, message: "Somthing went wrong", })
         }
     }
+    async getUnAnswered(req, res) {
+        try {
+            const { user_id, chapter_id } = req.body
+            let IncorrectAnsArray = [];
+            let getdata = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
+            let getAllQuestion = await QuestionModel.find({ chapter: chapter_id }, { question: 1, options: 1, difficulty_level: 1 })
+            var uniqueResultTwo = getAllQuestion.filter(function (obj) {
+                return !getdata.attampt_questions.some(function (obj2) {
+                    return obj._id == obj2.questionId;
+                });
+            });
+            res.json({ code: 200, success: true, message: "Get list successfully ", data1: uniqueResultTwo })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+
 
     async getflageQuestion(req, res) {
         try {
             const { user_id, chapter_id } = req.body
-            let getdata = await FlageModel.find({ 'user_id': user_id,'meta_data.chapter': mongoose.Types.ObjectId(chapter_id) },{meta_data:0}).populate('question_id','question options difficulty_level')
+            let getdata = await FlageModel.find({ 'user_id': user_id, 'meta_data.chapter': mongoose.Types.ObjectId(chapter_id) }, { meta_data: 0 }).populate('question_id', 'question options difficulty_level')
             // delete getdata['meta_data'] 
             res.json({ code: 200, success: true, message: "Get list successfully ", data: getdata })
         } catch (error) {

@@ -40,6 +40,8 @@ router.post('/search-data', user_controller.SearchApi)
 router.post('/get-correct-question', user_controller.getCorrectAnswer)
 router.post('/get-incorrect-question', user_controller.getIncorrectAnswer)
 router.post('/get-flag-question', user_controller.getflageQuestion)
+router.post('/get-unanswered-question', user_controller.getUnAnswered)
+
 
 
 
