@@ -391,9 +391,11 @@ class users {
             // let getData = await MocktestModel.findOne({ user_id: user_id, chapter: chapter_id }).lean()
             // if (getData) {
             //     res.json({ code: 200, success: true, message: "Already submit successfully ", data: getData })
+
             // } else {
-                // let getData = await MocktestModel.deleteOne({ user_id: user_id, chapter: chapter_id }).lean()
                 // let newArray = JSON.parse(attampt_question)
+                await MocktestModel.deleteOne({ user_id: user_id, chapter: chapter_id }).lean()
+
                 var mins = moment.utc(moment(end_time, "HH:mm:ss").diff(moment(start_time, "HH:mm:ss"))).format("HH:mm:ss")
 
                 let totalQuestionNo = attampt_question.length
@@ -403,7 +405,7 @@ class users {
                     }
                 });
                 let correct_question1 = await attampt_question1.filter((item) => item.currectOption == item.selectedOption);
-
+                let wrong_question1 = await attampt_question1.filter((item) => item.currectOption != item.selectedOption);
                 let percentage = ((correct_question1.length / attampt_question.length) * 100).toFixed(2)
                 let tag = percentage < 30 ? 'fail' : percentage > 30 && percentage < 50 ? "poor" : percentage > 50 && percentage < 70 ? "good" : 'excellent'
                 let saveData = new MocktestModel({
@@ -415,6 +417,8 @@ class users {
                     attampt_questions: attampt_question1,
                     attampt_total: attampt_question1.length,
                     correct_answer: correct_question1.length,
+                    wrong_questions_meta: wrong_question1,
+                    correct_answer_meta: correct_question1,
                     wrong_questions: (attampt_question1.length - correct_question1.length),
                     total_questions: totalQuestionNo,
                     percentage: percentage + "%",

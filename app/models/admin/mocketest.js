@@ -42,6 +42,13 @@ var mokcktestSchema = new Schema({
         type: String,
         trim: true
     },
+    wrong_questions_meta: {
+       type: { any: [Schema.Types.Mixed] }
+    },
+    correct_answer_meta: {
+       type: { any: [Schema.Types.Mixed] }
+    },
+   
     attampt_total: {
         type: String,
         trim: true
