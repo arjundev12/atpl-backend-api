@@ -15,8 +15,8 @@ class SubCategories {
             get: this.get.bind(this),
             delete: this.delete.bind(this),
             getList: this.getList.bind(this),
-            // getListById: this.getListById.bind(this),
-            // updateBlogs: this.updateBlogs.bind(this)
+            viewSubcategory: this.viewSubcategory.bind(this),
+            editSubcategory: this.editSubcategory.bind(this)
 
 
             // submitReferral: this.submitReferral.bind(this)
@@ -98,6 +98,29 @@ class SubCategories {
 
             }
 
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async viewSubcategory(req, res) {
+        try {
+            let data = await SubCategoryModel.findOne({ _id: req.query._id })
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "Get successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async editSubcategory(req, res) {
+        try {
+            let data = await SubCategoryModel.findOneAndUpdate({ _id: req.body._id }, { $set: req.body }, { new: true })
+            // await SubCategoryModel.updateMany({ category: req.body._id }, { $set: { category_meta: req.body } })
+            await ChapterModel.updateMany({ subcategory: req.body._id }, { $set: { subcategory_meta: req.body } })
+            let update_question = await QuestionModel.updateMany({ subcategory: req.body._id }, { $set: { subcategory_meta: req.body } })
+            // console.log("update_question", update_question)
+            res.json({ code: 200, success: true, message: "update successfully ", data: data })
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })
