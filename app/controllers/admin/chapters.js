@@ -14,8 +14,8 @@ class Chapters {
             get: this.get.bind(this),
             delete: this.delete.bind(this),
             getList: this.getList.bind(this),
-            // updateNews: this.updateNews.bind(this),
-            // updateBlogs: this.updateBlogs.bind(this)
+            viewChapters: this.viewChapters.bind(this),
+            editChapters: this.editChapters.bind(this)
             // submitReferral: this.submitReferral.bind(this)
         }
     }
@@ -90,9 +90,37 @@ class Chapters {
     }
     async getList(req, res){
         try {
-            let data = await ChapterModel.find({subcategory: req.query._id})
+            if(req.query._id){
+                let data = await ChapterModel.find({subcategory: req.query._id})
+                res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            }else{
+                let data = await ChapterModel.find()
+                res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            }
+       
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async viewChapters(req, res) {
+        try {
+            let data = await ChapterModel.findOne({ _id: req.query._id })
             // console.log("news", data)
-            res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            res.json({ code: 200, success: true, message: "Get successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async editChapters(req, res) {
+        try {
+            let data = await ChapterModel.findOneAndUpdate({ _id: req.body._id }, { $set: req.body }, { new: true })
+            // await SubCategoryModel.updateMany({ category: req.body._id }, { $set: { category_meta: req.body } })
+            // await ChapterModel.updateMany({ subcategory: req.body._id }, { $set: { subcategory_meta: req.body } })
+            let update_question = await QuestionModel.updateMany({ chapter: req.body._id }, { $set: { chapter_meta: req.body } })
+            // console.log("update_question", update_question)
+            res.json({ code: 200, success: true, message: "update successfully ", data: data })
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })

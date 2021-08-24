@@ -9,6 +9,8 @@ const TransactionModal = require('../../models/transactions')
 const DocumentsModel = require('../../models/userDocument')
 const BuySubscriptionModel = require('../../models/user/buySubscription');
 const MocktestModel = require('../../models/admin/mocketest');
+const FlageModel = require('../../models/user/questionflag');
+const PinQuestionModel = require('../../models/user/pinquestion');
 
 class adminAuth {
     constructor() {
@@ -26,7 +28,7 @@ class adminAuth {
             getplansByUserId: this.getplansByUserId.bind(this),
             getMocktestByUserId: this.getMocktestByUserId.bind(this),
             getMocktestById: this.getMocktestById.bind(this),
-            // getTotalSubscription: this.getTotalSubscription.bind(this),
+            deleteUser: this.deleteUser.bind(this),
             // getplansByUserId: this.getplansByUserId.bind(this),
             // getMocktestByUserId: this.getMocktestByUserId.bind(this),
 
@@ -217,6 +219,77 @@ class adminAuth {
             }
     
     }
+    async AdminUpdateUser(req, res) {
+        try {
+            let  { _id,name,DOB,profile_pic, contact_number,is_email_verify,is_number_verify ,block_user, address,country_code} = req.body
+            let query = {_id: _id }
+            let getUser = await UsersModel.findOne(query).lean()
+            // console.log("getUser", getUser)
+            if (getUser) {
+                let updateData = {}
+                if (name && name != "") {
+                    updateData.name = name
+                }
+                if (DOB && DOB != "") {
+                    updateData.DOB = DOB
+                }
+                if (contact_number && contact_number != "") {
+                    updateData.contact_number = contact_number
+                }
+                if (is_email_verify && is_email_verify != "") {
+                    updateData.is_email_verify = is_email_verify
+                }
+                if (is_number_verify && is_number_verify != "") {
+                    updateData.is_number_verify = is_number_verify
+                }
+                if (block_user && block_user != "") {
+                    updateData.block_user = block_user
+                }
+                if (address && address != "") {
+                    updateData.address = address
+                }
+                if (country_code && country_code != "") {
+                    updateData.country_code = country_code
+                }
+                let updateUser = await UsersModel.findOneAndUpdate(query, { $set: updateData }, { new: true })
+                res.json({ code: 200, success: true, message: 'profile update successfully', data: updateUser })
+            } else {
+                res.json({ code: 404, success: false, message: 'Email is not register', })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            if (error.codeName == 'DuplicateKey') {
+                res.json({ code: 400, success: false, message: `${Object.keys(error.keyValue)} is already exist`, })
+            } else {
+                res.json({ code: 500, success: false, message: "Somthing went wrong", })
+            }
+        }
+    }
+    async deleteUser(req, res) {
+        try {
+            let query = {_id: req.query._id }
+            let getUser = await UsersModel.findOne(query).lean()
+            // console.log("getUser", getUser)
+            if (getUser) {
+                let updateUser = await UsersModel.findOneAndRemove(query)
+                 await BuySubscriptionModel.findOneAndRemove({user_id:req.query._id })
+                 await MocktestModel.findOneAndRemove({user_id:req.query._id })
+                 await FlageModel.findOneAndRemove({user_id:req.query._id })
+                 await PinQuestionModel.findOneAndRemove({user_id:req.query._id })
+                  console.log("updateUser", updateUser)
+                res.json({ code: 200, success: true, message: 'profile delete successfully', data: updateUser })
+            } else {
+                res.json({ code: 404, success: false, message: 'Email is not register', })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            if (error.codeName == 'DuplicateKey') {
+                res.json({ code: 400, success: false, message: `${Object.keys(error.keyValue)} is already exist`, })
+            } else {
+                res.json({ code: 500, success: false, message: "Somthing went wrong", })
+            }
+        }
+    }
     //////////////////////////////////////////////////////////end///////////////////////////////////////
     async getUserKyc(req, res) {
         try {
@@ -244,72 +317,7 @@ class adminAuth {
             res.status(500).json({ success: false, message: "Internal server error", })
         }
     }
-    async AdminUpdateUser(req, res) {
-        try {
-            let { _id, name, email,country_code, username, number, profile_pic, login_type, country, reddit_username, minner_Activity ,is_number_verify,is_complete_kyc,block_user} = req.body
-            // console.log("getUser",_id, block_user)
-            // let array = [{ _id: _id }, { login_type: login_type }]
-            let query = {_id: _id }
-            // if (email) {
-            //     array.push({
-            //         email: email
-            //     })
-            // }
-            let getUser = await UsersModel.findOne(query).lean()
-            // console.log("getUser", getUser)
-            if (getUser) {
-                let updateData = {}
-                if (name && name != "") {
-                    updateData.name = name
-                }
-                if (username && username != "") {
-                    updateData.username = username
-                }
-                if (number && number != "") {
-                    updateData.number = number
-                    // updateData.is_number_verify = "2"
-                }
-                if (country && country != "") {
-                    updateData.country = country
-                }
-                if (profile_pic && profile_pic != "") {
-                    updateData.profile_pic = profile_pic
-                }
-                if (minner_Activity && minner_Activity != "") {
-                    updateData.minner_Activity = minner_Activity
-                }
-
-                if (reddit_username && reddit_username != "") {
-                    updateData.reddit_username = reddit_username
-                }
-                if (is_number_verify && is_number_verify != "") {
-                    updateData.is_number_verify = is_number_verify
-                }
-                if (is_complete_kyc && is_complete_kyc != "") {
-                    updateData.is_complete_kyc = is_complete_kyc
-                }
-                if (country_code && country_code != "") {
-                    updateData.country_code = country_code
-                }
-                if (block_user && block_user != "") {
-                    updateData.block_user = block_user
-                }
-                
-                
-                let updateUser = await UsersModel.findOneAndUpdate(query, { $set: updateData }, { new: true })
-                res.json({ code: 200, success: true, message: 'profile update successfully', data: updateUser })
-            } else {
-                res.json({ code: 404, success: false, message: 'Email is not register', })
-            }
-        } catch (error) {
-            console.log("Error in catch", error)
-            if (error.codeName == 'DuplicateKey') {
-                res.json({ code: 400, success: false, message: `${Object.keys(error.keyValue)} is already exist`, })
-            } else {
-                res.json({ code: 500, success: false, message: "Somthing went wrong", })
-            }
-        }
-    }
+   
     async getTotal(transaction_type ){
         let getUser 
         try {

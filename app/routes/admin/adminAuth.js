@@ -13,7 +13,6 @@ const admin = require('../../controllers/admin/admin');
 // upload.single('profile_image')
 router.post('/login',validationData.login, admin_controller.loginAdmin)
 // router.post('/get-user',Auth.jwtVerify, admin_controller.getUser)
-router.put('/update-user', Auth.jwtVerify,admin_controller.AdminUpdateUser)
 router.post('/get-transaction',Auth.jwtVerify, admin_controller.getTransaction)
 router.get('/get-Kyc',Auth.jwtVerify, admin_controller.getKycDoc)
 router.post('/get-kyc-user',Auth.jwtVerify, admin_controller.getUserKyc)
@@ -26,6 +25,9 @@ router.get('/get-total',Auth.jwtVerify, admin_controller.getTotalCount)
 router.post('/add-user', admin_controller.adminAddUser)
 router.post('/get-user', admin_controller.getUser)
 router.get('/get-user-details', admin_controller.getUserDetails)
+router.put('/update-user', admin_controller.AdminUpdateUser)
+router.delete('/delete-user', admin_controller.deleteUser)
+
 router.get('/get-total-subscription', admin_controller.getTotalSubscription)
 
 router.get('/get-user-plans', admin_controller.getplansByUserId)

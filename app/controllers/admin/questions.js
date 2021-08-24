@@ -14,7 +14,9 @@ class Question {
             uploadeImagebase64: this.uploadeImagebase64.bind(this),
             delete: this.delete.bind(this),
             insertXlsSheetData: this.insertXlsSheetData.bind(this),
-            uploadImageAWS: this.uploadImageAWS.bind(this)
+            uploadImageAWS: this.uploadImageAWS.bind(this),
+            viewQuestion: this.viewQuestion.bind(this),
+            editQuestion: this.editQuestion.bind(this),
         }
     }
 
@@ -117,6 +119,29 @@ class Question {
             let data = await QuestionModel.paginate(query, options)
             // console.log("news", data)
             res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async viewQuestion(req, res) {
+        try {
+            let data = await QuestionModel.findOne({ _id: req.query._id })
+            // console.log("news", data)
+            res.json({ code: 200, success: true, message: "Get successfully ", data: data })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ success: false, message: "Somthing went wrong", })
+        }
+    }
+    async editQuestion(req, res) {
+        try {
+            let data = await QuestionModel.findOneAndUpdate({ _id: req.body._id }, { $set: req.body }, { new: true })
+            // await SubCategoryModel.updateMany({ category: req.body._id }, { $set: { category_meta: req.body } })
+            // await ChapterModel.updateMany({ subcategory: req.body._id }, { $set: { subcategory_meta: req.body } })
+            // let update_question = await QuestionModel.updateMany({ chapter: req.body._id }, { $set: { chapter_meta: req.body } })
+            // console.log("update_question", update_question)
+            res.json({ code: 200, success: true, message: "update successfully ", data: data })
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ success: false, message: "Somthing went wrong", })

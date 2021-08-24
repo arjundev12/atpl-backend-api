@@ -14,6 +14,11 @@ router.delete('/delete-question',questions.delete)
 router.post('/uploade-sheet',upload.single('xlsSheet'),questions.uploadeXlsSheet)
 router.post('/insert-data',questions.insertXlsSheetData)
 
+router.get('/view-question',questions.viewQuestion)
+router.put('/edit-question',questions.editQuestion)
+
+
+
 //,
 
 

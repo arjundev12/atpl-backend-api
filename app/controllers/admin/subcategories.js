@@ -89,6 +89,7 @@ class SubCategories {
     async getList(req, res) {
         try {
             if (req.query._id) {
+                // console.log("hiiiii", typeof req.query._id, req.query._id )
                 let data = await SubCategoryModel.find({ category: req.query._id })
                 res.json({ code: 200, success: true, message: "Get list successfully ", data: data })
             } else {
